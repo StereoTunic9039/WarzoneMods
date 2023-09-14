@@ -1,0 +1,42 @@
+7 War
+6 Military intervention
+5 Embargo
+4 Peace
+3 Trading partners
+2 Allies
+1 Teammate
+
+
+~=
+
+
+--[[
+    
+	if (game.Settings.CommerceGame == false) then
+		horz = UI.CreateHorizontalLayoutGroup(rootParent);
+		UI.CreateLabel(horz).SetText("This mod only works in commerce games.  This isn't a commerce game.");
+		return;
+	end
+	if(game.Us == nil) then
+		horz = UI.CreateHorizontalLayoutGroup(rootParent);
+		UI.CreateLabel(horz).SetText("You cannot use the mod, cause you aren't in the game");
+		return;
+	end
+	if(game.Game.PlayingPlayers[game.Us.ID] == nil)then
+		horz = UI.CreateHorizontalLayoutGroup(root);
+		UI.CreateLabel(horz).SetText("You have been eliminated, so you are no longer able to interact with the mod");
+		return;
+	end
+
+]]--
+
+        --addOrder(WL.GameOrderCustom.Create(Game.Us.ID, "Buy Fixed Reinforcement Card", "",{ [WL.ResourceType.Gold] = Mod.Settings.ReinforcementCardCost }));
+
+
+	if(InWar(order.PlayerID,toowner) == false)then
+					skipThisOrder(WL.ModOrderControl.Skip);
+					--Decleare War for AI if AI(verification if settings allow it is in DeclareWar)
+					if(game.ServerGame.Game.Players[order.PlayerID].IsAIOrHumanTurnedIntoAI == true)then
+						DeclareWar(order.PlayerID,toowner,game);
+					end
+				end
