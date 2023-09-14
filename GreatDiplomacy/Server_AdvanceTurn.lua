@@ -90,8 +90,8 @@ function Server_AdvanceTurn_End(game, addNewOrder)										-- At the end of the
 		local moves = playerGameData[playerID]
 		for pID, newStatus in pairs(moves) do
 			if(newStatus ~= -1)then
-				playersStatus[playerID][pID] = newStatus
-				playersStatus[pID][playerID] = newStatus
+				playersStatus[playerID][pID] = playersStatus[pID][playerID] + newStatus
+				playersStatus[pID][playerID] = playersStatus[pID][playerID] + newStatus
 			end
 		end
 	end
