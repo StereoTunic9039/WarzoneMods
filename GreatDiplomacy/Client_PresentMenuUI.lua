@@ -69,12 +69,12 @@ function writeMenu()
         end);
 	end
 
-    globalCooperations = CreateButton(vert).SetText("All cooperations present").SetOnClick(function() 
-        globalCooperationsFnt();   -- No matter if you're a player or not, you'll be able to see the relations of everyone
-    end);
-
     globalRelations = CreateButton(vert).SetText("Everyone's relations").SetOnClick(function() 
         globalRelationsFnt();   -- No matter if you're a player or not, you'll be able to see the relations of everyone
+    end);
+    
+    globalCooperations = CreateButton(vert).SetText("All cooperations present").SetOnClick(function() 
+        globalCooperationsFnt();   -- No matter if you're a player or not, you'll be able to see the relations of everyone
     end);
 end
 
@@ -257,7 +257,7 @@ end
 function offersReceivedFnt()
     DestroyWindow();
     SetWindow("offersReceived")
-    labelOffersReceived = CreateLabel(vert).SetText("Offers Received")
+    labelOffersReceived = CreateLabel(vert).SetText("Offers received:")
     CreateEmpty(vert)
     CreateEmpty(vert)
     listOffers = {}
@@ -307,37 +307,70 @@ function yourCooperationsFnt()
                 local name = coop.Name
                 local type = coop.Type
                 listCooperations[key] = CreateButton(vert).SetText(name.." ("..type..")").SetOnClick(function()
-                    lookIntoCooperation(key)
+                    lookIntoCooperation(key, true)
                 end);
             end
         end 
     end
+    CreateEmpty(vert)
+    CreateEmpty(vert)
     returnFnt()  
 end;
 
 function globalCooperationsFnt()
     DestroyWindow();
     SetWindow("globalCooperations")
-    labelGlobalCooperations = CreateLabel(vert).SetText("All cooperations existent:")
+    labelGlobalCooperations = CreateLabel(vert).SetText("All cooperations present:")
     CreateEmpty(vert)
     CreateEmpty(vert)
     listCooperations={}
     for key, coop in pairs(Mod.PublicGameData.Cooperations) do
         for i = 1, #coop.Players do
-            if (Game.Us.ID == coop.Players[i]) then
-                local name = coop.Name
-                local type = coop.Type
-                listCooperations[key] = CreateButton(vert).SetText(name.." ("..type..")").SetOnClick(function()
-                    lookIntoCooperation(key)
-                end);
-            end
+            local name = coop.Name
+            local type = coop.Type
+            listCooperations[key] = CreateButton(vert).SetText(name.." ("..type..")").SetOnClick(function()
+                lookIntoCooperation(key, false)
+            end);
         end 
     end
+    CreateEmpty(vert)
+    CreateEmpty(vert)
     returnFnt()
 end;
 
-function lookIntoCooperation(key)
-
+function lookIntoCooperation(key, w)
+    DestroyWindow();
+    SetWindow("lookIntoCooperation")
+    coop = Mod.PublicGameData.Cooperations[key]
+    labelCooperationName = CreateLabel(vert).SetText(coop.Name)
+    CreateEmpty(vert)
+    CreateEmpty(vert)
+    labelCooperationType = CreateLabel(vert).SetText(coop.Type)
+    CreateEmpty(vert)
+    if(coop.Type == Empire)then
+        labelCooperationLeader = CreateLabel(vert).setText(coop.Leader)
+        CreateEmpty(vert)
+    end
+    labelCooperationMembersNumber = CreateLabel(vert).SetText("Number of members: "..#coop.Players)
+    CreateEmpty(vert)
+    CreateEmpty(vert)
+    if(w)then
+        print(a)
+    else
+        joinCooperation = CreateButton(vert).SetText("Request to join").SetOnClick(function()
+            requestJoinCoop(key)
+        end)
+    end
+    CreateEmpty(vert)
+    moreSettings = CreateButton(vert).SetText("Ulterior settings").SetOnClick(function()
+        ulteriorSettings(key)
+    end)
+    CreateEmpty(vert)
+    CreateEmpty(vert)
+    CreateEmpty(vert)
+    back = CreateButton(vert).SetText("GO BACK").SetOnClick(function()
+        if(w)then globalCooperationsFnt; else yourCooperationsFnt end;
+    end); 
 end
 
 -- Cooperations
