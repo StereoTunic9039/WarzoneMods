@@ -369,7 +369,7 @@ function lookIntoCooperation(key, w)
     CreateEmpty(vert)
     CreateEmpty(vert)
     back = CreateButton(vert).SetText("GO BACK").SetOnClick(function()
-        if(w)then globalCooperationsFnt; else yourCooperationsFnt end;
+        if(w)then globalCooperationsFnt; else yourCooperationsFnt end
     end); 
 end
 
