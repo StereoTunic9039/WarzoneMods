@@ -23,13 +23,11 @@ function CTS (game, standing)
                 else
                     PlayersStatus[k][id] = lvlPc                        -- otherwise add to the person "k" their relation with person "id" at the human level
                 end
+                playerGameData[k][id].Action = {}
+                playerGameData[k][id].Object = {}
             end
         end
     end
-
-	for ID, _ in pairs(game.ServerGame.Game.Players)do
-		playerGameData[ID] = {}
-	end
 
     publicGameData.PlayersStatus = PlayersStatus;
     publicGameData.Cooperations = Cooperations;    
