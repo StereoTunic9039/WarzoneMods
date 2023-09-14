@@ -87,7 +87,7 @@ function Server_AdvanceTurn_End(game, addNewOrder)										-- At the end of the
 	end
 
 	for playerID, player in pairs(game.ServerGame.Game.Players) do
-		local moves = playerGameData[playerID]
+		local moves = playerGameData[playerID].Action
 		for pID, newStatus in pairs(moves) do
 			if(newStatus ~= -1)then
 				playersStatus[playerID][pID] = playersStatus[pID][playerID] + newStatus
