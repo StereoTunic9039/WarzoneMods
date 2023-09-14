@@ -211,22 +211,20 @@ function yourActionsFnt()            --Your diplomatic relations with the variou
     CreateEmpty(vert)
     CreateEmpty(vert)
     listActions = {}
-    for id, action in pairs(Mod.PlayerGameData) do
-        if(action ~= -1)then
-            local player = Game.Game.Players[id]
-            local name = player.DisplayName(nil, true)
-            local color = player.Color.Name
-            local level = Mod.PublicGameData.PlayersStatus[Game.Us.ID][id]
-            local relation 
-            if(level > action)then
-                relation = relationUp[action]
-            else
-                relation = relationDown[action]
-            end
-            listActions[id] = CreateButton(vert).SetText(relation .. name .. " (" .. color .. ")").SetOnClick(function()
-                yourActionWithFnt(id, name, color, relation)
-            end);
+    for id, action in pairs(Mod.PlayerGameData.Action) do
+        local player = Game.Game.Players[id]
+        local name = player.DisplayName(nil, true)
+        local color = player.Color.Name
+        local level = Mod.PublicGameData.PlayersStatus[Game.Us.ID][id]
+        local relation 
+        if(0 > action)then
+            relation = relationUp[level+action]
+        else
+            relation = relationDown[level+action]
         end
+        listActions[id] = CreateButton(vert).SetText(relation .. name .. " (" .. color .. ")").SetOnClick(function()
+            yourActionWithFnt(id, name, color, relation)
+        end);
     end
     returnFnt()                     -- The return button
 end
@@ -261,17 +259,15 @@ function offersReceivedFnt()
     CreateEmpty(vert)
     CreateEmpty(vert)
     listOffers = {}
-    for id, o in pairs(Mod.PlayerGameData) do
-        if(o == -1)then
-            local player = Game.Game.Players[id]
-            local name = player.DisplayName(nil, true)
-            local color = player.Color.Name
-            local level = Mod.PublicGameData.PlayersStatus[Game.Us.ID][id]
-            local relation = relationLevel[level-1]
-            listOffers[id] = CreateButton(vert).SetText(relation .. name .. " (" .. color .. ")").SetOnClick(function()
-                acceptOfferFnt(id, name, color, relation)
-            end);
-        end
+    for id, object in pairs(Mod.PlayerGameData.Object) do
+        local player = Game.Game.Players[id]
+        local name = player.DisplayName(nil, true)
+        local color = player.Color.Name
+        local level = Mod.PublicGameData.PlayersStatus[Game.Us.ID][id]
+        local relation = relationLevel[level-1]
+        listOffers[id] = CreateButton(vert).SetText(relation .. name .. " (" .. color .. ")").SetOnClick(function()
+            acceptOfferFnt(id, name, color, relation)
+        end);
     end
     returnFnt()  
 end

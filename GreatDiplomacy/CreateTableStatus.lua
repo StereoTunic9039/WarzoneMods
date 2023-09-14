@@ -16,6 +16,9 @@ function CTS (game, standing)
     
     for k, player in pairs(game.ServerGame.Game.Players) do   -- for everyone in the game ("k" will be their id)
         PlayersStatus[k] = {}                                   -- if I don't do this Lua won't know it's a table
+        playerGameData[k] = {}
+        playerGameData[k].Action = {}
+        playerGameData[k].Object = {}
         for id, pid in pairs(game.ServerGame.Game.Players) do     -- for evryone in the game again ("id" will be their id this time)
             if (k ~= id) then                                       -- if they are not the same person
                 if(pid.IsAI or player.IsAI) then                      -- if either of them is AI
@@ -23,8 +26,6 @@ function CTS (game, standing)
                 else
                     PlayersStatus[k][id] = lvlPc                        -- otherwise add to the person "k" their relation with person "id" at the human level
                 end
-                playerGameData[k][id].Action = {}
-                playerGameData[k][id].Object = {}
             end
         end
     end
