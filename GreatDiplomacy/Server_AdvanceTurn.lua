@@ -88,10 +88,12 @@ function Server_AdvanceTurn_End(game, addNewOrder)										-- At the end of the
 
 	for playerID, player in pairs(game.ServerGame.Game.Players) do
 		local moves = playerGameData[playerID].Action
-		for pID, newStatus in pairs(moves) do
-			if(newStatus ~= -1)then
-				playersStatus[playerID][pID] = playersStatus[pID][playerID] + newStatus
-				playersStatus[pID][playerID] = playersStatus[pID][playerID] + newStatus
+		if(moves ~= nil)then
+			for pID, newStatus in pairs(moves) do
+				if(newStatus ~= -1)then
+					playersStatus[playerID][pID] = playersStatus[pID][playerID] + newStatus
+					playersStatus[pID][playerID] = playersStatus[pID][playerID] + newStatus
+				end
 			end
 		end
 	end
