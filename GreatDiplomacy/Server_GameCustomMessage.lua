@@ -19,16 +19,30 @@ function Server_GameCustomMessage(game, ID, payload)
         elseif(n==1)then                                -- Declare war
             p1a[id] = 1
             p2o[ID] = nil
-            if(p1o[id] == nil)then        ---CHECK THIS!!!!   
+            if(p1o[id] ~= nil)then        ---CHECK THIS!!!!   
                 p1o[id] = nil
                 p2a[ID] = nil
+                playerGameData[id].ActsTot = playerGameData[id].ActsTot -1
+                playerGameData[id].ActsOff = playerGameData[id].ActsOff -1
             end
+            playerGameData[ID].ActsTot = playerGameData[ID].ActsTot +1
+            playerGameData[ID].ActsDec = playerGameData[ID].ActsDec +1
         elseif(n==0)then                                -- Retract declaration/offering
-            p1a[id] = nil
-            p2o[ID] = nil
+            if(p1a[id] == 1)then
+                p1a[id] = nil
+                playerGameData[ID].ActsDec = playerGameData[ID].ActsDec -1
+            else
+                p1a[id] = nil
+                p2o[ID] = nil
+                playerGameData[ID].ActsOff = playerGameData[ID].ActsOff -1
+            end
+            playerGameData[ID].ActsTot = playerGameData[ID].ActsTot -1
+            
         elseif(n==-1)then                               -- Offer peace
             p1a[id] = -1
             p2o[ID] = -1
+            playerGameData[ID].ActsTot = playerGameData[ID].ActsTot +1
+            playerGameData[ID].ActsOff = playerGameData[ID].ActsOff +1
         elseif(n==-2)then                               -- Accept peace offer
             p1a[id] = nil
             p2o[ID] = nil
@@ -36,6 +50,8 @@ function Server_GameCustomMessage(game, ID, payload)
             p2a[ID] = nil
             playersStatus[ID][id] = (Lvl -1)
             playersStatus[id][ID] = (Lvl -1)
+            playerGameData[ID].ActsTot = playerGameData[ID].ActsTot +1
+            playerGameData[ID].ActsOff = playerGameData[ID].ActsOff +1
             publicGameData.PlayersStatus = playersStatus
             Mod.PublicGameData = publicGameData
         end

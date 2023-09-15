@@ -197,6 +197,29 @@ function returnFnt()                --The return button
 end
 
 function changeLevel(id, n)
+    print(Mod.Settings.LA)
+    if(Mod.Settings.LA)then
+        if(Mod.Settings.UA)then
+            if((n < 0) or (n == 1))then
+                if(Mod.PlayerGameData.ActsTot >= Mod.Settings.LO)then
+                    print("cant")
+                    return
+                end
+            end
+        else
+            if(n < 0)then
+                if(Mod.PlayerGameData.ActsOff >= Mod.Settings.LO)then
+                    print("can't")
+                    return
+                end
+            elseif(n==1)then
+                if(Mod.PlayerGameData.ActsDec >= Mod.Settings.LD)then
+                    print("cannot")
+                    return
+                end
+            end
+        end
+    end
     payload = {Mod = 8063520}
     local actualPl = {}
     actualPl[id] = n

@@ -19,6 +19,9 @@ function CTS (game, standing)
         playerGameData[k] = {}
         playerGameData[k].Action = {}
         playerGameData[k].Object = {}
+        playerGameData[k].ActsDec = 0
+        playerGameData[k].ActsOff = 0
+        playerGameData[k].ActsTot = 0
         for id, pid in pairs(game.ServerGame.Game.Players) do     -- for evryone in the game again ("id" will be their id this time)
             if (k ~= id) then                                       -- if they are not the same person
                 if(pid.IsAI or player.IsAI) then                      -- if either of them is AI
@@ -31,7 +34,7 @@ function CTS (game, standing)
     end
 
     publicGameData.PlayersStatus = PlayersStatus;
-    publicGameData.Cooperations = Cooperations;    
+    publicGameData.Cooperations = Cooperations;  
     Mod.PublicGameData = publicGameData             -- Just updates the publicGameData with the stuff
 	Mod.PlayerGameData = playerGameData;
 end

@@ -7,18 +7,20 @@ function Client_PresentConfigureUI(rootParent)
     vert = GetRoot();
 
 
-	local ValueAi = Mod.Settings.lvlAi    --Basic relation with AIs
-	local ValuePc = Mod.Settings.lvlPc    --Basic relation with Players
-	local ValueWar = Mod.Settings.lvlWar    --
-	local ValueBomb = Mod.Settings.lvlBomb    --Basic relation with AIs
-	local ValueSanction = Mod.Settings.lvlSanction    --Basic relation with Players
-	local ValueSpy = Mod.Settings.lvlSpy    --
-	local ValueGift = Mod.Settings.lvlGift    --Basic relation with AIs
-	local ValueSee = Mod.Settings.lvlSee    --Basic relation with Players
-	local ValueTransfer = Mod.Settings.lvlTransfer    --
-	local Valuempdps = Mod.Settings.mpdps
-	local ValueLO = Mod.Settings.LO
-	local ValueLD = Mod.Settings.LD
+	ValueAi = Mod.Settings.lvlAi    --Basic relation with AIs
+	ValuePc = Mod.Settings.lvlPc    --Basic relation with Players
+	ValueWar = Mod.Settings.lvlWar    --
+	ValueBomb = Mod.Settings.lvlBomb    --Basic relation with AIs
+	ValueSanction = Mod.Settings.lvlSanction    --Basic relation with Players
+	ValueSpy = Mod.Settings.lvlSpy    --
+	ValueGift = Mod.Settings.lvlGift    --Basic relation with AIs
+	ValueSee = Mod.Settings.lvlSee    --Basic relation with Players
+	ValueTransfer = Mod.Settings.lvlTransfer    --
+	Valuempdps = Mod.Settings.mpdps
+	ValueLO = Mod.Settings.LO
+	ValueLD = Mod.Settings.LD
+	ValueUA = Mod.Settings.UA
+	ValueLA = Mod.Settings.LA
 	if ValueAi == nil then
 		ValueAi = 4 						--Normally it's 4 
 	end
@@ -55,6 +57,12 @@ function Client_PresentConfigureUI(rootParent)
 	if ValueLD == nil then
 		ValueLD = -1						--Normally it's 1
 	end
+	if ValueUA == nil then
+		ValueUA = false
+	end
+	if ValueLA == nil then
+		ValueLA = false
+	end
 
 
 	mainWin = "mainWindow"
@@ -89,8 +97,11 @@ function Client_PresentConfigureUI(rootParent)
 			numberInputFieldPc = CreateNumberInputField(sliderLvlRelationsPc).SetSliderMinValue(1).SetSliderMaxValue(7).SetValue(ValuePc)  -- Both united in the selection for Players relations
 		
 			lacbCont = CreateVerticalLayoutGroup(bscbCont)
-			CreateCheckBox(lacbCont).SetIsChecked(false).SetText("Limit actions per turn").SetOnValueChanged(function(IsChecked) showedreturnmessage = false; limitActions(IsChecked) end)
+			CreateCheckBox(lacbCont).SetIsChecked(ValueLA).SetText("Limit actions per turn").SetOnValueChanged(function(IsChecked) showedreturnmessage = false; limitActions(IsChecked) end)
 			CreateEmpty(lacbCont)
+			if(ValueLA==true)then
+				limitActions(true)
+			end
 		else
 			ValueAi = numberInputFieldAi.GetValue()
 			ValuePc = numberInputFieldPc.GetValue()
@@ -105,6 +116,7 @@ function Client_PresentConfigureUI(rootParent)
 	end
 
 	function limitActions(check)
+		ValueLA = check
 		if(check)then
 			laWin = "LimActWindow"
 			AddSubWindow(bsWin, laWin);
@@ -121,7 +133,7 @@ function Client_PresentConfigureUI(rootParent)
 			numberInputFieldLD = CreateNumberInputField(sliderLimitDeclarations).SetSliderMinValue(-1).SetSliderMaxValue(10).SetValue(ValueLD)  -- Both united in the selection for Players relations
 		
 			local uacbCont = CreateVerticalLayoutGroup(lacbCont)
-			CreateCheckBox(uacbCont).SetIsChecked(false).SetText("Upgrades and downgrades are cumulative").SetOnValueChanged(function(IsChecked) showedreturnmessage = false; uniteActions(isChecked) end)
+			CreateCheckBox(uacbCont).SetIsChecked(ValueUA).SetText("Upgrades and downgrades are cumulative").SetOnValueChanged(function(IsChecked) showedreturnmessage = false; uniteActions(isChecked) end)
 		else
 			ValueLO = numberInputFieldLO.GetValue()
 			ValueLD = numberInputFieldLD.GetValue()
@@ -215,4 +227,8 @@ function Client_PresentConfigureUI(rootParent)
 			SetWindow(coopWin)
 		end
 	end
+end
+
+function uniteActions(check)
+	ValueUA = check
 end

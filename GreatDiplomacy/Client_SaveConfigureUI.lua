@@ -130,4 +130,35 @@ function Client_SaveConfigureUI(alert)
 	else
 		Mod.Settings.mpdps = Valuempdps
 	end
+
+	if(numberInputFieldLO ~= nil)then
+		Mod.Settings.LO = numberInputFieldLO.GetValue()
+		if (Mod.Settings.LO < -1) then
+			Mod.Settings.LO = -1
+		end
+
+		if (Mod.Settings.LO > 1000) then
+			Mod.Settings.LO = 1000
+		end
+	else
+		Mod.Settings.LO = ValueLO
+	end
+
+	if(numberInputFieldLD ~= nil)then
+		Mod.Settings.LD = numberInputFieldLD.GetValue()
+		if (Mod.Settings.LD < 2) then
+			Mod.Settings.LD = 2
+		end
+
+		if (Mod.Settings.LD > 100) then
+			Mod.Settings.LD = 100
+		end
+	else
+		Mod.Settings.LD = ValueLD
+	end
+
+	Mod.Settings.LA = ValueLA
+	Mod.Settings.UA = ValueUA
+
+	print(ValueLA, ValueLO, ValueLD, ValueUA)
 end  				-- Sets straight every unwanted input and such 
