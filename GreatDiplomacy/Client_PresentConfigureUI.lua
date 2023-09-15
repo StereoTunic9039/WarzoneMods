@@ -7,45 +7,53 @@ function Client_PresentConfigureUI(rootParent)
     vert = GetRoot();
 
 
-	local initialValueAi = Mod.Settings.lvlAi    --Basic relation with AIs
-	local initialValuePc = Mod.Settings.lvlPc    --Basic relation with Players
-	local initialValueWar = Mod.Settings.lvlWar    --
-	local initialValueBomb = Mod.Settings.lvlBomb    --Basic relation with AIs
-	local initialValueSanction = Mod.Settings.lvlSanction    --Basic relation with Players
-	local initialValueSpy = Mod.Settings.lvlSpy    --
-	local initialValueGift = Mod.Settings.lvlGift    --Basic relation with AIs
-	local initialValueSee = Mod.Settings.lvlSee    --Basic relation with Players
-	local initialValueTransfer = Mod.Settings.lvlTransfer    --
-	local initialValuempdps = Mod.Settings.mpdps
-	if initialValueAi == nil then
-		initialValueAi = 5 						 --Normally it's 5 (Mod Description)
+	local ValueAi = Mod.Settings.lvlAi    --Basic relation with AIs
+	local ValuePc = Mod.Settings.lvlPc    --Basic relation with Players
+	local ValueWar = Mod.Settings.lvlWar    --
+	local ValueBomb = Mod.Settings.lvlBomb    --Basic relation with AIs
+	local ValueSanction = Mod.Settings.lvlSanction    --Basic relation with Players
+	local ValueSpy = Mod.Settings.lvlSpy    --
+	local ValueGift = Mod.Settings.lvlGift    --Basic relation with AIs
+	local ValueSee = Mod.Settings.lvlSee    --Basic relation with Players
+	local ValueTransfer = Mod.Settings.lvlTransfer    --
+	local Valuempdps = Mod.Settings.mpdps
+	local ValueLO = Mod.Settings.LO
+	local ValueLD = Mod.Settings.LD
+	if ValueAi == nil then
+		ValueAi = 4 						--Normally it's 4 
 	end
-	if initialValuePc == nil then
-		initialValuePc = 4						 --Normally it's 4 (Mod Description)
+	if ValuePc == nil then
+		ValuePc = 4						 	--Normally it's 4 
 	end
-	if initialValueWar == nil then
-		initialValueWar = 7						 --Normally it's 7 (Mod Description)
+	if ValueWar == nil then
+		ValueWar = 7						--Normally it's 7 
 	end
-	if initialValueBomb == nil then
-		initialValueBomb = 6 					 --Normally it's 6 (Mod Description)
+	if ValueBomb == nil then
+		ValueBomb = 6 						--Normally it's 6 
 	end
-	if initialValueSanction == nil then
-		initialValueSanction = 5				 --Normally it's 5 (Mod Description)
+	if ValueSanction == nil then
+		ValueSanction = 5				 	--Normally it's 5 
 	end
-	if initialValueSpy == nil then
-		initialValueSpy = 4						 --Normally it's 4 (Mod Description)
+	if ValueSpy == nil then
+		ValueSpy = 4						--Normally it's 4
 	end
-	if initialValueGift == nil then
-		initialValueGift = 3					 --Normally it's 3 (Mod Description)
+	if ValueGift == nil then
+		ValueGift = 3					 	--Normally it's 3
 	end
-	if initialValueSee == nil then
-		initialValueSee = 2						 --Normally it's 2 (Mod Description)
+	if ValueSee == nil then
+		ValueSee = 2					    --Normally it's 2
 	end
-	if initialValueTransfer == nil then
-		initialValueTransfer = 1				 --Normally it's 1 (Mod Description)
+	if ValueTransfer == nil then
+		ValueTransfer = 1				 	--Normally it's 1 
 	end
-	if initialValuempdps == nil then
-		initialValuempdps = 5
+	if Valuempdps == nil then
+		Valuempdps = 5 						--Normally it's 5 
+	end
+	if ValueLO == nil then
+		ValueLO = 1				 			--Normally it's 1 
+	end
+	if ValueLD == nil then
+		ValueLD = -1						--Normally it's 1
 	end
 
 
@@ -74,17 +82,55 @@ function Client_PresentConfigureUI(rootParent)
 			
 			local sliderLvlRelationsAi = CreateHorizontalLayoutGroup(bscbCont)            -- Slider
 			labelLvlRelationsAi = CreateLabel(sliderLvlRelationsAi).SetText("Relation level with AIs at the start")				  -- Label
-			numberInputFieldAi = CreateNumberInputField(sliderLvlRelationsAi).SetSliderMinValue(1).SetSliderMaxValue(7).SetValue(initialValueAi)  -- Both united in the selection for Ai relations
+			numberInputFieldAi = CreateNumberInputField(sliderLvlRelationsAi).SetSliderMinValue(1).SetSliderMaxValue(7).SetValue(ValueAi)  -- Both united in the selection for Ai relations
 
 			local sliderLvlRelationsPc = CreateHorizontalLayoutGroup(bscbCont)			  -- Slider
 			labelLvlRelationsPc = CreateLabel(sliderLvlRelationsPc).SetText("Relation level with Players at the start")			  -- Label
-			numberInputFieldPc = CreateNumberInputField(sliderLvlRelationsPc).SetSliderMinValue(1).SetSliderMaxValue(7).SetValue(initialValuePc)  -- Both united in the selection for Players relations
+			numberInputFieldPc = CreateNumberInputField(sliderLvlRelationsPc).SetSliderMinValue(1).SetSliderMaxValue(7).SetValue(ValuePc)  -- Both united in the selection for Players relations
+		
+			lacbCont = CreateVerticalLayoutGroup(bscbCont)
+			CreateCheckBox(lacbCont).SetIsChecked(false).SetText("Limit actions per turn").SetOnValueChanged(function(IsChecked) showedreturnmessage = false; limitActions(IsChecked) end)
+			CreateEmpty(lacbCont)
 		else
+			ValueAi = numberInputFieldAi.GetValue()
+			ValuePc = numberInputFieldPc.GetValue()
+			if(numberInputFieldLO ~= nil)then
+				ValueLO = numberInputFieldLO.GetValue()
+				ValueLD = numberInputFieldLD.GetValue()
+			end 
 			SetWindow(bsWin)
 			DestroyWindow(bsWin, true)
 			SetWindow(mainWin)
 		end
 	end
+
+	function limitActions(check)
+		if(check)then
+			laWin = "LimActWindow"
+			AddSubWindow(bsWin, laWin);
+			SetWindow(laWin)
+
+			labelTip = CreateLabel(lacbCont).SetText("-1 means infinite, if you check the cumulative option the offers' slider will be the one used.")				  -- Label
+
+			local sliderLimitOffers = CreateHorizontalLayoutGroup(lacbCont)            -- Slider
+			labelLimitOffers = CreateLabel(sliderLimitOffers).SetText("Maximum number of upgrades per turn")				  -- Label
+			numberInputFieldLO = CreateNumberInputField(sliderLimitOffers).SetSliderMinValue(-1).SetSliderMaxValue(10).SetValue(ValueLO)  -- Both united in the selection for Ai relations
+
+			local sliderLimitDeclarations = CreateHorizontalLayoutGroup(lacbCont)			  -- Slider
+			labelLimitDeclarations = CreateLabel(sliderLimitDeclarations).SetText("Maximum number of downgrades per turn")			  -- Label
+			numberInputFieldLD = CreateNumberInputField(sliderLimitDeclarations).SetSliderMinValue(-1).SetSliderMaxValue(10).SetValue(ValueLD)  -- Both united in the selection for Players relations
+		
+			local uacbCont = CreateVerticalLayoutGroup(lacbCont)
+			CreateCheckBox(uacbCont).SetIsChecked(false).SetText("Upgrades and downgrades are cumulative").SetOnValueChanged(function(IsChecked) showedreturnmessage = false; uniteActions(isChecked) end)
+		else
+			ValueLO = numberInputFieldLO.GetValue()
+			ValueLD = numberInputFieldLD.GetValue()
+			SetWindow(laWin)
+			DestroyWindow(laWin, true)
+			SetWindow(bsWin)
+		end
+	end
+
 
 	function relLvlAttFnt(check)
 		if(check)then
@@ -94,32 +140,39 @@ function Client_PresentConfigureUI(rootParent)
 
 			local sliderLvlWar = CreateHorizontalLayoutGroup(rlacbCont)			  
 			labelLvlWar = CreateLabel(sliderLvlWar).SetText("First status able to attack")			  -- Label
-			numberInputFieldWar = CreateNumberInputField(sliderLvlWar).SetSliderMinValue(4).SetSliderMaxValue(7).SetValue(initialValueWar)   
+			numberInputFieldWar = CreateNumberInputField(sliderLvlWar).SetSliderMinValue(4).SetSliderMaxValue(7).SetValue(ValueWar)   
 
 			local sliderLvlBomb = CreateHorizontalLayoutGroup(rlacbCont)           
 			labelLvlBomb = CreateLabel(sliderLvlBomb).SetText("Relation level with bombs")				  -- Label
-			numberInputFieldBomb = CreateNumberInputField(sliderLvlBomb).SetSliderMinValue(5).SetSliderMaxValue(7).SetValue(initialValueBomb)  -- Both united in the selection for Ai relations
+			numberInputFieldBomb = CreateNumberInputField(sliderLvlBomb).SetSliderMinValue(5).SetSliderMaxValue(7).SetValue(ValueBomb)  -- Both united in the selection for Ai relations
 
 			local sliderLvlSanction = CreateHorizontalLayoutGroup(rlacbCont)			 
 			labelLvlSanction = CreateLabel(sliderLvlSanction).SetText("Relation level with sanctions")			  -- Label
-			numberInputFieldSanction = CreateNumberInputField(sliderLvlSanction).SetSliderMinValue(1).SetSliderMaxValue(7).SetValue(initialValueSanction)  -- Both united in the selection for Players relations
+			numberInputFieldSanction = CreateNumberInputField(sliderLvlSanction).SetSliderMinValue(1).SetSliderMaxValue(7).SetValue(ValueSanction)  -- Both united in the selection for Players relations
 			
 			local sliderLvlSpy = CreateHorizontalLayoutGroup(rlacbCont)			  
 			labelLvlSpy = CreateLabel(sliderLvlSpy).SetText("First status able to spy")			  -- Label
-			numberInputFieldSpy = CreateNumberInputField(sliderLvlSpy).SetSliderMinValue(3).SetSliderMaxValue(7).SetValue(initialValueSpy)  
+			numberInputFieldSpy = CreateNumberInputField(sliderLvlSpy).SetSliderMinValue(3).SetSliderMaxValue(7).SetValue(ValueSpy)  
 
 			local sliderLvlGift = CreateHorizontalLayoutGroup(rlacbCont)            
 			labelLvlGift = CreateLabel(sliderLvlGift).SetText("Relation level with gifts")				  -- Label
-			numberInputFieldGift = CreateNumberInputField(sliderLvlGift).SetSliderMinValue(1).SetSliderMaxValue(7).SetValue(initialValueGift)  -- Both united in the selection for Ai relations
+			numberInputFieldGift = CreateNumberInputField(sliderLvlGift).SetSliderMinValue(1).SetSliderMaxValue(7).SetValue(ValueGift)  -- Both united in the selection for Ai relations
 
 			local sliderLvlSee = CreateHorizontalLayoutGroup(rlacbCont)			  
 			labelLvlSee = CreateLabel(sliderLvlSee).SetText("Relation level with See")			  -- Label
-			numberInputFieldSee = CreateNumberInputField(sliderLvlSee).SetSliderMinValue(1).SetSliderMaxValue(7).SetValue(initialValueSee)  -- Both united in the selection for Players relations
+			numberInputFieldSee = CreateNumberInputField(sliderLvlSee).SetSliderMinValue(1).SetSliderMaxValue(7).SetValue(ValueSee)  -- Both united in the selection for Players relations
 			
 			local sliderLvlTransfer = CreateHorizontalLayoutGroup(rlacbCont)			  
 			labelLvlTransfer = CreateLabel(sliderLvlTransfer).SetText("First status able to tranfer")			  -- Label
-			numberInputFieldTransfer = CreateNumberInputField(sliderLvlTransfer).SetSliderMinValue(1).SetSliderMaxValue(2).SetValue(initialValueTransfer) 
+			numberInputFieldTransfer = CreateNumberInputField(sliderLvlTransfer).SetSliderMinValue(1).SetSliderMaxValue(2).SetValue(ValueTransfer) 
 		else
+			ValueWar = numberInputFieldWar.GetValue()
+			ValueBomb = numberInputFieldBomb.GetValue()
+			ValueSanction = numberInputFieldSanction.GetValue()
+			ValueSpy = numberInputFieldSpy.GetValue()
+			ValueGift = numberInputFieldGift.GetValue()
+			ValueSee = numberInputFieldSee.GetValue()
+			ValueTransfer = numberInputFieldTransfer.GetValue()
 			SetWindow(rlaWin)
 			DestroyWindow(rlaWin, true)
 			SetWindow(mainWin)
@@ -138,6 +191,9 @@ function Client_PresentConfigureUI(rootParent)
 			allowEmpLG = CreateVerticalLayoutGroup(cscbCont)
 			allowEmp = CreateCheckBox(allowEmpLG).SetIsChecked(false).SetText("Allow empires").SetOnValueChanged(function(IsChecked) showedreturnmessage = false;  end)
 		else
+			if(mpdps ~= nil)then
+				Valuempdps = mpdps.GetValue()
+			end
 			SetWindow(coopWin)
 			DestroyWindow(coopWin, true)
 			SetWindow(mainWin)
@@ -151,8 +207,9 @@ function Client_PresentConfigureUI(rootParent)
 			SetWindow(defWin)
 			mpdpc = CreateHorizontalLayoutGroup(allowDefLG)															   
 			mpdpl = CreateLabel(mpdpc).SetText("Max number of players in a defensive pact")				  				-- Label
-			mpdps = CreateNumberInputField(mpdpc).SetSliderMinValue(2).SetSliderMaxValue(10).SetValue(initialValuempdps)  				-- Slider
+			mpdps = CreateNumberInputField(mpdpc).SetSliderMinValue(2).SetSliderMaxValue(10).SetValue(Valuempdps)  				-- Slider
 		else 
+			Valuempdps = mpdps.GetValue()
 			SetWindow(defWin)
 			DestroyWindow(defWin)
 			SetWindow(coopWin)

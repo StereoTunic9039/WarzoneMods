@@ -93,12 +93,14 @@ function Server_AdvanceTurn_End(game, addNewOrder)										-- At the end of the
 				if(newStatus ~= -1)then
 					playersStatus[playerID][pID] = playersStatus[pID][playerID] + newStatus
 					playersStatus[pID][playerID] = playersStatus[pID][playerID] + newStatus
+					playerGameData[pID].Action = {}
 				end
 			end
 		end
 	end
 	for ID, _ in pairs(game.ServerGame.Game.Players)do
-		playerGameData[ID] = {}
+		playerGameData[ID].Action = {}
+		playerGameData[ID].Object = {}
 	end
 
 	if(game.Settings.Cards[WL.CardID.Spy] ~= nil) then

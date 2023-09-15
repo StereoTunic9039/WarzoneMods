@@ -1,3 +1,5 @@
+require("Client_PresentConfigureUI")
+
 function Client_SaveConfigureUI(alert)
 	if(numberInputFieldAi ~= nil)then
 		Mod.Settings.lvlAi = numberInputFieldAi.GetValue()
@@ -9,7 +11,7 @@ function Client_SaveConfigureUI(alert)
 			Mod.Settings.lvlAi = 7
 		end
 	else
-		Mod.Settings.lvlAi = 4
+		Mod.Settings.lvlAi = ValueAi
 	end
 
 	if(numberInputFieldPc ~= nil)then
@@ -22,7 +24,7 @@ function Client_SaveConfigureUI(alert)
 			Mod.Settings.lvlPc = 7
 		end
 	else
-		Mod.Settings.lvlPc = 3
+		Mod.Settings.lvlPc = ValuePc
 	end
 
 	if(numberInputFieldWar ~= nil)then
@@ -35,7 +37,7 @@ function Client_SaveConfigureUI(alert)
 			Mod.Settings.lvlWar = 7
 		end
 	else
-		Mod.Settings.lvlWar = 7
+		Mod.Settings.lvlWar = ValueWar
 	end
 
 	if(numberInputFieldBomb ~= nil)then
@@ -48,7 +50,7 @@ function Client_SaveConfigureUI(alert)
 			Mod.Settings.lvlBomb = 7
 		end
 	else
-		Mod.Settings.lvlBomb = 6
+		Mod.Settings.lvlBomb = ValueBomb
 	end
 
 	if(numberInputFieldSanction ~= nil)then
@@ -61,7 +63,7 @@ function Client_SaveConfigureUI(alert)
 			Mod.Settings.lvlSanction = 7
 		end
 	else
-		Mod.Settings.lvlSanction = 5
+		Mod.Settings.lvlSanction = Sanction
 	end
 
 	if(numberInputFieldSpy ~= nil)then
@@ -74,7 +76,7 @@ function Client_SaveConfigureUI(alert)
 			Mod.Settings.lvlSpy = 7
 		end
 	else
-		Mod.Settings.lvl = 4
+		Mod.Settings.lvl = ValueSpy
 	end
 
 	if(numberInputFieldGift ~= nil)then
@@ -87,7 +89,7 @@ function Client_SaveConfigureUI(alert)
 			Mod.Settings.lvlGift = 7
 		end
 	else
-		Mod.Settings.lvlGift = 3
+		Mod.Settings.lvlGift = ValueGift
 	end
 
 	if(numberInputFieldSee ~= nil)then
@@ -100,7 +102,7 @@ function Client_SaveConfigureUI(alert)
 			Mod.Settings.lvlSee = 7
 		end
 	else
-		Mod.Settings.lvlSee = 2
+		Mod.Settings.lvlSee = ValueSee
 	end
 
 	if(numberInputFieldTransfer ~= nil)then
@@ -113,7 +115,7 @@ function Client_SaveConfigureUI(alert)
 			Mod.Settings.lvlTransfer = Mod.Settings.lvlWar -1
 		end
 	else
-		Mod.Settings.lvlTransfer = 1
+		Mod.Settings.lvlTransfer = ValueTransfer
 	end
 
 	if(mpdps ~= nil)then
@@ -126,6 +128,6 @@ function Client_SaveConfigureUI(alert)
 			Mod.Settings.mpdps = 100
 		end
 	else
-		Mod.Settings.mpdps = 5
+		Mod.Settings.mpdps = Valuempdps
 	end
 end  				-- Sets straight every unwanted input and such 

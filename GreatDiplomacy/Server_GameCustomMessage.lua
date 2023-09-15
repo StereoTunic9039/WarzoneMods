@@ -44,7 +44,6 @@ function Server_GameCustomMessage(game, ID, payload)
         playerGameData[ID].Object = p1o
         playerGameData[id].Object = p2o
         Mod.PlayerGameData = playerGameData
-        tblprint(Mod.PlayerGameData)
     end
 end
 
