@@ -1,4 +1,9 @@
 require("consolelog")
+coopTypes = {
+    [1] = "Defensive pact",
+    [2] = "Federation",
+    [3] = "Empire ",
+}
 
 function Server_GameCustomMessage(game, ID, payload)
     if(payload.Mod == 8063520)then
@@ -60,6 +65,50 @@ function Server_GameCustomMessage(game, ID, payload)
         playerGameData[ID].Object = p1o
         playerGameData[id].Object = p2o
         Mod.PlayerGameData = playerGameData
+    end
+
+    if(payload.Mod == 8063521)then
+        actualPl = payload.Content
+        coopName = actualPl.Name
+        coopType = actualPl.Type
+        publicGameData = Mod.PublicGameData
+        coops = Mod.PublicGameData.Cooperations
+        coops[coopName] = {}
+        coops[coopName].Type = coopType
+        coops[coopName].Members = {ID}
+        coops[coopName].JoinRequests = {}
+        if(coopType == 3)then
+            coops[coopName].Leader = ID
+        end
+        publicGameData.Cooperations = coops
+        Mod.PublicGameData = publicGameData
+    end
+
+    if(payload.Mod == 8063522)then
+        name = payload.Content.Name
+        publicGameData = Mod.PublicGameData
+        coop = publicGameData.Cooperations[name]
+        if(#coop.Members == 1)then 
+            publicGameData.Cooperations[name] = nil
+        else
+            for i, value in ipairs(coop.Members)do
+                if(value == ID)then
+                    table.remove(coop.Members, i)
+                    break
+                end
+            end
+            publicGameData.Cooperations[name] = coop
+        end
+        Mod.PublicGameData = publicGameData
+    end
+
+    if(payload.Mod == 8063523)then
+        name = payload.Content.Name
+        publicGameData = Mod.PublicGameData
+        coop = publicGameData.Cooperations[name]
+        coop.JoinRequests = {[ID] = {}}
+        publicGameData.Cooperations = coop
+        Mod.PublicGameData = publicGameData
     end
 end
 

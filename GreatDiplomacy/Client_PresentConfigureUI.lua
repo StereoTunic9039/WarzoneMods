@@ -21,6 +21,7 @@ function Client_PresentConfigureUI(rootParent)
 	ValueLD = Mod.Settings.LD
 	ValueUA = Mod.Settings.UA
 	ValueLA = Mod.Settings.LA
+	ValueVP = Mod.Settings.VP
 	if ValueAi == nil then
 		ValueAi = 4 						--Normally it's 4 
 	end
@@ -62,6 +63,9 @@ function Client_PresentConfigureUI(rootParent)
 	end
 	if ValueLA == nil then
 		ValueLA = false
+	end
+	if ValueVP == nil then
+		ValueVP = false
 	end
 
 
@@ -220,6 +224,7 @@ function Client_PresentConfigureUI(rootParent)
 			mpdpc = CreateHorizontalLayoutGroup(allowDefLG)															   
 			mpdpl = CreateLabel(mpdpc).SetText("Max number of players in a defensive pact")				  				-- Label
 			mpdps = CreateNumberInputField(mpdpc).SetSliderMinValue(2).SetSliderMaxValue(10).SetValue(Valuempdps)  				-- Slider
+			vetoPower = CreateCheckBox(allowDefLG).SetIsChecked(ValueVP).SetText("Allow members to veto the admission of newcomers").SetOnValueChanged(function(IsChecked) showedreturnmessage = false; allowVetoPower(isChecked) end)
 		else 
 			Valuempdps = mpdps.GetValue()
 			SetWindow(defWin)
@@ -231,4 +236,8 @@ end
 
 function uniteActions(check)
 	ValueUA = check
+end
+
+function uniteActions(check)
+	ValueVP = check
 end

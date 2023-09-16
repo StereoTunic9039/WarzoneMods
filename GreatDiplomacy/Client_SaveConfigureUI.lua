@@ -159,6 +159,7 @@ function Client_SaveConfigureUI(alert)
 
 	Mod.Settings.LA = ValueLA
 	Mod.Settings.UA = ValueUA
+	Mod.Settings.VP = ValueVP
 
 	print(ValueLA, ValueLO, ValueLD, ValueUA)
 end  				-- Sets straight every unwanted input and such 

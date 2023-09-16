@@ -32,6 +32,11 @@ relationDown = {
     [6] = "Intervene militarily on ",
     [7] = "Declare war on "
 } 
+coopTypes = {
+    [1] = "Defensive pact",
+    [2] = "Federation",
+    [3] = "Empire ",
+}
 
 function Client_PresentMenuUI(rootParent, setMaxSize, setScrollable, game, closeAll)
 	Game = game;
@@ -57,6 +62,12 @@ function writeMenu()
         end);
 	end
 
+    if(Game.Us ~= nil)then      -- Only if you are a player you'll have diplomatic relations with players
+        craeteYourCooperation = CreateButton(vert).SetText("Create a cooperation").SetOnClick(function()
+            createCooperationsFnt();        -- This creates the button to see your diplomatic relations with the various players
+        end);
+	end
+
     if(Game.Us ~= nil)then             -- Only if you are a player you'll have diplomatic relations with players
         openYourActions = CreateButton(vert).SetText("Your actions").SetOnClick(function()
             yourActionsFnt();        -- This creates the button to see your diplomatic actions with the various players
@@ -78,15 +89,6 @@ function writeMenu()
     end);
 end
 
-function addOrder(order)
-	local orders = Game.Orders;
-	if(Game.Us.HasCommittedOrders == true)then
-		UI.Alert("You need to uncommit first");
-		return;
-	end
-	table.insert(orders, order);
-	Game.Orders = orders;
-end
 function  tablelength(T)
 	local count = 0;
 	for _, elem in pairs(T)do
@@ -102,7 +104,8 @@ function yourRelationsFnt()            --Your diplomatic relations with the vari
     CreateEmpty(vert)
     CreateEmpty(vert)
     listPlayers={}
-    for key, player in pairs(Game.Game.Players) do
+    players = Game.Game.Players
+    for key, player in pairs(players) do
         if (Game.Us.ID ~= key) then
             local name = player.DisplayName(nil, true)
             local color = player.Color.Name
@@ -141,7 +144,7 @@ function yourRelationsWithFnt(key, name, color, level)
     end
     CreateEmpty(vert)
     CreateEmpty(vert)
-    back = CreateButton(vert).SetText("GO BACK").SetOnClick(function()
+    back = CreateButton(vert).SetText("Go back").SetOnClick(function()
         yourRelationsFnt()                 -- Brings you back
     end);
 end;
@@ -183,7 +186,7 @@ function theirRelationsFnt(theirID, them)    -- Their diplomatic relations to th
     end
     CreateEmpty(vert)
     CreateEmpty(vert)
-    back = CreateButton(vert).SetText("GO BACK").SetOnClick(function()
+    back = CreateButton(vert).SetText("Go back").SetOnClick(function()
         globalRelationsFnt()                 -- Brings you back
     end);                   
 end
@@ -191,29 +194,28 @@ end
 function returnFnt()                --The return button
     CreateEmpty(vert)
     CreateEmpty(vert)
-    returnButton = CreateButton(vert).SetText("GO BACK").SetOnClick(function()
+    returnButton = CreateButton(vert).SetText("Go back").SetOnClick(function()
         writeMenu()                 -- Brings you to the home
     end);
 end
 
 function changeLevel(id, n)
-    print(Mod.Settings.LA)
     if(Mod.Settings.LA)then
         if(Mod.Settings.UA)then
             if((n < 0) or (n == 1))then
-                if(Mod.PlayerGameData.ActsTot >= Mod.Settings.LO)then
+                if((Mod.PlayerGameData.ActsTot >= Mod.Settings.LO) or (Mod.Settings.LO == -1))then
                     print("cant")
                     return
                 end
             end
         else
             if(n < 0)then
-                if(Mod.PlayerGameData.ActsOff >= Mod.Settings.LO)then
+                if((Mod.PlayerGameData.ActsOff >= Mod.Settings.LO) or (Mod.Settings.LO == -1))then
                     print("can't")
                     return
                 end
             elseif(n==1)then
-                if(Mod.PlayerGameData.ActsDec >= Mod.Settings.LD)then
+                if((Mod.PlayerGameData.ActsDec >= Mod.Settings.LD) or (Mod.Settings.LD == -1))then
                     print("cannot")
                     return
                 end
@@ -270,7 +272,7 @@ end
 function specBack()
     CreateEmpty(vert)
     CreateEmpty(vert)
-    back = CreateButton(vert).SetText("GO BACK").SetOnClick(function()
+    back = CreateButton(vert).SetText("Go back").SetOnClick(function()
         yourActionsFnt()                 -- Brings you back
     end); 
 end
@@ -302,18 +304,19 @@ function acceptOfferFnt(id, name, color, relation)
     CreateEmpty(vert)
     CreateEmpty(vert)
     CreateEmpty(vert)
-    yes = CreateButton(vert).SetText("Yes, accept offer").SetOnClick(function()
+    choice = CreateHorizontalLayoutGroup(vert)
+    yes = CreateButton(choice).SetText("Yes, accept offer").SetOnClick(function()
         changeLevel(id, -2)
     end) 
-    CreateEmpty(vert)
-    CreateEmpty(vert)
-    no = CreateButton(vert).SetText("No, refuse offer").SetOnClick(function()
+    CreateEmpty(choice)
+    CreateEmpty(choice)
+    no = CreateButton(choice).SetText("No, refuse offer").SetOnClick(function()
         changeLevel(id, 2)
     end)
     CreateEmpty(vert)
     CreateEmpty(vert)
     CreateEmpty(vert)
-    back = CreateButton(vert).SetText("GO BACK").SetOnClick(function()
+    back = CreateButton(vert).SetText("Go back").SetOnClick(function()
         offersReceived()                 -- Brings you back
     end); 
 end
@@ -325,14 +328,14 @@ function yourCooperationsFnt()
     CreateEmpty(vert)
     CreateEmpty(vert)
     listCooperations={}
-    for key, coop in pairs(Mod.PublicGameData.Cooperations) do
-        for i = 1, #coop.Players do
-            if (Game.Us.ID == coop.Players[i]) then
-                local name = coop.Name
+    for name, coop in pairs(Mod.PublicGameData.Cooperations) do
+        for i = 1, #coop.Members do
+            if (Game.Us.ID == coop.Members[i]) then
                 local type = coop.Type
-                listCooperations[key] = CreateButton(vert).SetText(name.." ("..type..")").SetOnClick(function()
-                    lookIntoCooperation(key, true)
+                listCooperations[name] = CreateButton(vert).SetText(name.." ("..type..")").SetOnClick(function()
+                    lookIntoCooperation(name, true)
                 end);
+                break
             end
         end 
     end
@@ -341,6 +344,38 @@ function yourCooperationsFnt()
     returnFnt()  
 end;
 
+function createCooperationsFnt()
+    DestroyWindow();
+    SetWindow("createCooperations")
+    labelCreateCooperation = CreateLabel(vert).SetText("Create a cooperation:")
+    CreateEmpty(vert)
+    CreateEmpty(vert)
+    local sliderType = CreateHorizontalLayoutGroup(vert)
+    labelType = CreateLabel(sliderType).SetText("Select the type")
+    sliderType = CreateNumberInputField(sliderType).SetSliderMinValue(1).SetSliderMaxValue(3).SetValue(1)
+    CreateEmpty(vert)
+    CreateEmpty(vert)
+    writerName = CreateTextInputField(vert).SetText("Enter the name for your cooperation here").SetPlaceholderText("Enter the name here").SetCharacterLimit(24)
+    CreateEmpty(vert)
+    CreateEmpty(vert)
+    create = CreateButton(vert).SetText("Create").SetOnClick(function()
+        typeCoop = sliderType.GetValue()
+        nameCoop = writerName.GetText()
+        if(typeCoop < 1)then
+            typeCoop = 1
+        elseif(typeCoop > 3)then
+            typeCoop = 3
+        end
+        if((nameCoop ~= nil) and (nameCoop ~= "Enter the name for your cooperation here"))then 
+            createTheCooperation(typeCoop, nameCoop)
+            writeMenu()   
+        end
+    end)
+    CreateEmpty(vert)
+    CreateEmpty(vert)
+    returnFnt()  
+end
+
 function globalCooperationsFnt()
     DestroyWindow();
     SetWindow("globalCooperations")
@@ -348,12 +383,11 @@ function globalCooperationsFnt()
     CreateEmpty(vert)
     CreateEmpty(vert)
     listCooperations={}
-    for key, coop in pairs(Mod.PublicGameData.Cooperations) do
-        for i = 1, #coop.Players do
-            local name = coop.Name
+    for name, coop in pairs(Mod.PublicGameData.Cooperations) do
+        for i = 1, #coop.Members do
             local type = coop.Type
-            listCooperations[key] = CreateButton(vert).SetText(name.." ("..type..")").SetOnClick(function()
-                lookIntoCooperation(key, false)
+            listCooperations[name] = CreateButton(vert).SetText(name.." ("..type..")").SetOnClick(function()
+                lookIntoCooperation(name, false)
             end);
         end 
     end
@@ -362,39 +396,150 @@ function globalCooperationsFnt()
     returnFnt()
 end;
 
-function lookIntoCooperation(key, w)
+function lookIntoCooperation(name, w) --isin, wheter whoever is calling the function is inside the coop
     DestroyWindow();
     SetWindow("lookIntoCooperation")
-    coop = Mod.PublicGameData.Cooperations[key]
-    labelCooperationName = CreateLabel(vert).SetText(coop.Name)
+    coop = Mod.PublicGameData.Cooperations[name]
+    labelCooperationName = CreateLabel(vert).SetText(name)
     CreateEmpty(vert)
     CreateEmpty(vert)
-    labelCooperationType = CreateLabel(vert).SetText(coop.Type)
+    labelCooperationType = CreateLabel(vert).SetText(coopTypes[coop.Type])
     CreateEmpty(vert)
     if(coop.Type == Empire)then
-        labelCooperationLeader = CreateLabel(vert).setText(coop.Leader)
+        labelCooperationLeader = CreateLabel(vert).setText("Lead by "..coop.Leader)
         CreateEmpty(vert)
     end
-    labelCooperationMembersNumber = CreateLabel(vert).SetText("Number of members: "..#coop.Players)
+    labelCooperationMembersNumber = CreateLabel(vert).SetText("Number of members: "..#coop.Members)
     CreateEmpty(vert)
     CreateEmpty(vert)
-    if(w)then
-        print(a)
+    local isin = false
+    for i = 1, #coop.Members do
+        if (Game.Us.ID == coop.Members[i]) then
+            isin = true 
+            break
+        end
+    end
+    if(isin)then
+        leaveCooperation = CreateButton(vert).SetText("Leave").SetOnClick(function()
+            leaveCoop(name)
+            writeMenu()
+        end)
+        CreateEmpty(vert)
+        pendingRequests = CreateButton(vert).SetText("See pending requests ("..#coop.JoinRequests..")").SetOnClick(function()
+            print("a")
+        end)
     else
         joinCooperation = CreateButton(vert).SetText("Request to join").SetOnClick(function()
-            requestJoinCoop(key)
+            requestJoinCoop(name)
         end)
     end
     CreateEmpty(vert)
     moreSettings = CreateButton(vert).SetText("Ulterior settings").SetOnClick(function()
-        ulteriorSettings(key)
+        ulteriorSettings(name)
     end)
     CreateEmpty(vert)
     CreateEmpty(vert)
     CreateEmpty(vert)
-    back = CreateButton(vert).SetText("GO BACK").SetOnClick(function()
-        if(w)then globalCooperationsFnt(); else yourCooperationsFnt() end
+    back = CreateButton(vert).SetText("Go back").SetOnClick(function()
+        if(w)then 
+            yourCooperationsFnt() 
+        else 
+            globalCooperationsFnt() 
+        end
     end); 
 end
 
--- Cooperations
+function createTheCooperation(typeCoop, nameCoop)
+    if(Mod.Settings.LA)then
+        if(Mod.Settings.UA)then
+            if((Mod.PlayerGameData.ActsTot >= Mod.Settings.LO) or (Mod.Settings.LO == -1))then
+                print("cant")
+                return
+            end
+        else
+            if((Mod.PlayerGameData.ActsOff >= Mod.Settings.LO) or (Mod.Settings.LO == -1))then
+                print("can't")
+                return
+            end
+        end
+    end
+    if(Mod.PublicGameData.Cooperations ~= nil)then
+        for name, _ in pairs(Mod.PublicGameData.Cooperations)do
+            if(name == nameCoop)then
+                return
+            end
+        end
+    end
+    payload = {Mod = 8063521}
+    local actualPl = {}
+    actualPl.Type = typeCoop
+    actualPl.Name = nameCoop
+    payload.Content = actualPl
+    Game.SendGameCustomMessage("Waiting...", payload, function()    showedreturnmessage = false; end);
+end         -- Cooperations
+
+function leaveCoop(name)
+    if(Mod.Settings.LA)then
+        if(Mod.Settings.UA)then
+            if((Mod.PlayerGameData.ActsTot >= Mod.Settings.LO) or (Mod.Settings.LO == -1))then
+                print("cant")
+                return
+            end
+        else
+            if((Mod.PlayerGameData.ActsDec >= Mod.Settings.LD) or (Mod.Settings.LD == -1))then
+                print("can't")
+                return
+            end
+        end
+    end
+    payload = {Mod = 8063522}
+    local actualPl = {}
+    actualPl.Name = name
+    payload.Content = actualPl
+    print("send")
+    Game.SendGameCustomMessage("Waiting...", payload, function()    showedreturnmessage = false; end);
+end
+
+function requestJoinCoop(name)
+    if(Mod.Settings.LA)then
+        if(Mod.Settings.UA)then
+            if((Mod.PlayerGameData.ActsTot >= Mod.Settings.LO) or (Mod.Settings.LO == -1))then
+                print("cant")
+                return
+            end
+        else
+            if((Mod.PlayerGameData.ActsOff >= Mod.Settings.LO) or (Mod.Settings.LO == -1))then
+                print("can't")
+                return
+            end
+        end
+    end
+    payload = {Mod = 8063523}
+    local actualPl = {}
+    actualPl.Name = name
+    payload.Content = actualPl
+    Game.SendGameCustomMessage("Waiting...", payload, function()    showedreturnmessage = false; end);
+end
+
+function treatCoopRequestFtn(name)
+    DestroyWindow();
+    SetWindow("treatJoinRequests")
+    labelJoinRequests = CreateLabel(vert).SetText("All requests to join:")
+    CreateEmpty(vert)
+    CreateEmpty(vert)
+    listRequests={}
+    coop = Mod.PublicGameData.Cooperations[name]
+    players = Game.Game.Players
+    for i, id in ipairs(coop.JoinRequests) do
+        local name = players[id].DisplayName(nil, true)
+        local color = players[id].Color.Name
+        local level = Mod.PublicGameData.PlayersStatus[Game.Us.ID][id]
+        local relation = relationLevel[level]
+        listRequests[id] = CreateButton(vert).SetText(name.." ("..color.."). Your relation with him is: "..relation).SetOnClick(function()
+            print("B")
+        end);
+    end
+end
+
+
+
