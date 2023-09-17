@@ -6,7 +6,6 @@ function Client_PresentConfigureUI(rootParent)
 	Init(rootParent)
     vert = GetRoot();
 
-
 	ValueAi = Mod.Settings.lvlAi    --Basic relation with AIs
 	ValuePc = Mod.Settings.lvlPc    --Basic relation with Players
 	ValueWar = Mod.Settings.lvlWar    --
@@ -22,6 +21,8 @@ function Client_PresentConfigureUI(rootParent)
 	ValueUA = Mod.Settings.UA
 	ValueLA = Mod.Settings.LA
 	ValueVP = Mod.Settings.VP
+	ValueADP = Mod.Settings.ADP
+	ValueTE = Mod.Settings.TE
 	if ValueAi == nil then
 		ValueAi = 4 						--Normally it's 4 
 	end
@@ -67,7 +68,12 @@ function Client_PresentConfigureUI(rootParent)
 	if ValueVP == nil then
 		ValueVP = false
 	end
-
+	if ValueADP == nil then
+		ValueADP = false
+	end
+	if ValueTE == nil then
+		ValueTE = 6
+	end
 
 	mainWin = "mainWindow"
 	SetWindow(mainWin);
@@ -81,7 +87,7 @@ function Client_PresentConfigureUI(rootParent)
 	CreateCheckBox(rlacbCont).SetIsChecked(false).SetText("Check relation level attributes").SetOnValueChanged(function(IsChecked) showedreturnmessage = false; relLvlAttFnt(IsChecked) end)
 
 	local cscbCont = CreateVerticalLayoutGroup(mainContainer)
-	CreateCheckBox(cscbCont).SetIsChecked(false).SetText("Activate cooperation settings").SetOnValueChanged(function(IsChecked) showedreturnmessage = false; cooperationSettingsFnt(IsChecked) end)
+	CreateCheckBox(cscbCont).SetIsChecked(ValueADP).SetText("Activate cooperation settings").SetOnValueChanged(function(IsChecked) showedreturnmessage = false; cooperationSettingsFnt(IsChecked) end)
 	CreateEmpty(cscbCont)
 	CreateEmpty(cscbCont)
 	CreateEmpty(cscbCont)
@@ -147,7 +153,6 @@ function Client_PresentConfigureUI(rootParent)
 		end
 	end
 
-
 	function relLvlAttFnt(check)
 		if(check)then
 			rlaWin = "RelLevAttWindow"
@@ -196,6 +201,7 @@ function Client_PresentConfigureUI(rootParent)
 	end
 
 	function cooperationSettingsFnt(check)
+		ValueADP = check
 		if(check)then
 			coopWin = "CooperationWindow"
 			AddSubWindow(mainWin, coopWin);
@@ -210,6 +216,9 @@ function Client_PresentConfigureUI(rootParent)
 			if(mpdps ~= nil)then
 				Valuempdps = mpdps.GetValue()
 			end
+			if(takesEffSlider ~= nil)then
+				ValueTE = takesEffSlider.GetValue()
+			end
 			SetWindow(coopWin)
 			DestroyWindow(coopWin, true)
 			SetWindow(mainWin)
@@ -222,22 +231,30 @@ function Client_PresentConfigureUI(rootParent)
 			AddSubWindow(coopWin, defWin);
 			SetWindow(defWin)
 			mpdpc = CreateHorizontalLayoutGroup(allowDefLG)															   
-			mpdpl = CreateLabel(mpdpc).SetText("Max number of players in a defensive pact")				  				-- Label
+			mpdpl = CreateLabel(mpdpc).SetText("Max number of players in a defensive pact: ")				  				-- Label
 			mpdps = CreateNumberInputField(mpdpc).SetSliderMinValue(2).SetSliderMaxValue(10).SetValue(Valuempdps)  				-- Slider
+			takesEffCont = CreateHorizontalLayoutGroup(allowDefLG)															   
+			takesEffLabel = CreateLabel(takesEffCont).SetText("The defensive pact takes effect when relations go to level:")				  				-- Label
+			takesEffSlider = CreateNumberInputField(takesEffCont).SetSliderMinValue(5).SetSliderMaxValue(7).SetValue(ValueTE)  				-- Slider
 			vetoPower = CreateCheckBox(allowDefLG).SetIsChecked(ValueVP).SetText("Allow members to veto the admission of newcomers").SetOnValueChanged(function(IsChecked) showedreturnmessage = false; allowVetoPower(isChecked) end)
 		else 
 			Valuempdps = mpdps.GetValue()
+			ValueTE = takesEffSlider.GetValue()
 			SetWindow(defWin)
 			DestroyWindow(defWin)
 			SetWindow(coopWin)
 		end
 	end
-end
 
-function uniteActions(check)
-	ValueUA = check
-end
-
-function uniteActions(check)
-	ValueVP = check
+	function uniteActions(check)
+		ValueUA = check
+	end
+	
+	function allowVetoPower(check)
+		ValueVP = check
+	end
+	
+	if(ValueADP)then
+		cooperationSettingsFnt(true)
+	end
 end

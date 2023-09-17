@@ -317,7 +317,7 @@ function acceptOfferFnt(id, name, color, relation)
     CreateEmpty(vert)
     CreateEmpty(vert)
     back = CreateButton(vert).SetText("Go back").SetOnClick(function()
-        offersReceived()                 -- Brings you back
+        writeMenu()                 -- Brings you back
     end); 
 end
 
@@ -426,7 +426,9 @@ function lookIntoCooperation(name, w) --isin, wheter whoever is calling the func
         end)
         CreateEmpty(vert)
         pendingRequests = CreateButton(vert).SetText("See pending requests ("..#coop.JoinRequests..")").SetOnClick(function()
-            print("a")
+            if(#coop.JoinRequests > 0)then
+                seePendingRequestsFnt(name)
+            end
         end)
     else
         joinCooperation = CreateButton(vert).SetText("Request to join").SetOnClick(function()
@@ -541,5 +543,59 @@ function treatCoopRequestFtn(name)
     end
 end
 
+function seePendingRequestsFnt(name)
+    DestroyWindow();
+    SetWindow("seePendingRequestes")
+    coop = Mod.PublicGameData.Cooperations[name]
+    labelPendingRequests = CreateLabel(vert).SetText("Players who requested to join "..name..":")
+    CreateEmpty(vert)
+    CreateEmpty(vert)
+    listRequesters={}
+    players = Game.Game.Players
+    requesters = coop.JoinRequests
+    for i, id in ipairs(requesters) do
+        player = players[id]
+        local playerName = player.DisplayName(nil, true)
+        local color = player.Color.Name
+        local level = Mod.PublicGameData.PlayersStatus[Game.Us.ID][key]
+        local relation = relationLevel[level]
+        listRequesters[id] = CreateButton(vert).SetText(name.." ("..color..").").SetOnClick(function()
+            decidePendingRequest(id, name, color, relation)
+        end);
+    end
+end
 
+function decidePendingRequest(id, name, color, relation)
+    DestroyWindow();
+    SetWindow("seePendingRequestes")
+    coop = Mod.PublicGameData.Cooperations[name]
+    player = Game.Game.Players[id]
+    labelPendingRequests = CreateLabel(vert).SetText("Do you wish to accept "..player.. " ("..color..") into the cooperation? Your relation with him is "..relation..".")
+    CreateEmpty(vert)
+    CreateEmpty(vert)
+    choice = CreateHorizontalLayoutGroup(vert)
+    yes = CreateButton(choice).SetText("Yes, accept request").SetOnClick(function()
+        decidePR(name, id, true)
+    end) 
+    CreateEmpty(choice)
+    CreateEmpty(choice)
+    no = CreateButton(choice).SetText("No, refuse request").SetOnClick(function()
+        decidePR(name, id, false)
+    end)
+    CreateEmpty(vert)
+    CreateEmpty(vert)
+    CreateEmpty(vert)
+    back = CreateButton(vert).SetText("Go back").SetOnClick(function()
+        writeMenu()                 -- Brings you back
+    end); 
+end
 
+function decidePR(name, id, n)
+    payload = {Mod = 8063524}
+    local actualPl = {}
+    actualPl.Name = name
+    actualPl.Id = id
+    actualPl.N = n
+    payload.Content = actualPl
+    Game.SendGameCustomMessage("Waiting...", payload, function()    showedreturnmessage = false; end);
+end

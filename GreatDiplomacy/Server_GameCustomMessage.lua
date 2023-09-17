@@ -106,7 +106,58 @@ function Server_GameCustomMessage(game, ID, payload)
         name = payload.Content.Name
         publicGameData = Mod.PublicGameData
         coop = publicGameData.Cooperations[name]
-        coop.JoinRequests = {[ID] = {}}
+        coopJR = coop.JoinRequests
+        coopJR[ID] = {["Favor"]={}, ["Against"]={}}
+        coop.JoinRequests = coopJR
+        publicGameData.Cooperations = coop
+        Mod.PublicGameData = publicGameData
+    end
+
+    if(payload.Mod == 8063524)then
+        name = payload.Content.Name
+        n = payload.Content.N 
+        id = payload.Content.Id 
+        publicGameData = Mod.PublicGameData
+        coop = publicGameData.Cooperations[name]
+        coopJR = coop.JoinRequests
+        favor = coopJR[id].Favor
+        against = coopJR[id].Against
+        if(Mod.Settings.VP)then
+            if(n)then
+                if not favor[ID] then
+                    favor[ID] = true
+                    if #favor == #coop.Members then
+                        table.insert(coop.Members, id)
+                        coopJR[id] = nil
+                        if #coop.Members >= Mod.Settings.mpdps then
+                            coop.JoinRequests = {}
+                        end
+                    end
+                end
+            else
+                coopJR[id] = nil
+            end
+        else
+            if(n)then
+                if not favor[ID] then
+                    favor[ID] = true
+                    if (#favor > (#coop.Members - #favor))then
+                        table.insert(coop.Members, id)
+                        coopJR[id] = nil
+                        if #coop.Members >= Mod.Settings.mpdps then
+                            coop.JoinRequests = {}
+                        end
+                    end
+                end
+            else
+                if not against[ID] then
+                    against[ID] = true
+                    if (#against >= (#coop.Members - #against))then 
+                        coopJR[id] = nil
+                    end
+                end
+            end
+        end
         publicGameData.Cooperations = coop
         Mod.PublicGameData = publicGameData
     end
