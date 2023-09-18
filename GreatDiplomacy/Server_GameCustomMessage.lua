@@ -158,7 +158,7 @@ function Server_GameCustomMessage(game, ID, payload)
                 end
             end
         end
-        publicGameData.Cooperations = coop
+        publicGameData.Cooperations[name] = coop
         Mod.PublicGameData = publicGameData
     end
 end
