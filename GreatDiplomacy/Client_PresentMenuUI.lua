@@ -395,12 +395,10 @@ function globalCooperationsFnt()
     CreateEmpty(vert)
     listCooperations={}
     for name, coop in pairs(Mod.PublicGameData.Cooperations) do
-        for i = 1, #coop.Members do
-            local type = coop.Type
-            listCooperations[name] = CreateButton(vert).SetText(name.." ("..type..")").SetOnClick(function()
-                lookIntoCooperation(name, false)
-            end);
-        end 
+        local type = coop.Type
+        listCooperations[name] = CreateButton(vert).SetText(name.." ("..coopTypes[type]..")").SetOnClick(function()
+            lookIntoCooperation(name, false)
+        end);
     end
     CreateEmpty(vert)
     CreateEmpty(vert)
