@@ -21,7 +21,7 @@ function Client_PresentConfigureUI(rootParent)
 	ValueUA = Mod.Settings.UA
 	ValueLA = Mod.Settings.LA
 	ValueVP = Mod.Settings.VP
-	ValueADP = Mod.Settings.ADP
+	ValueACS = Mod.Settings.ACS
 	ValueTE = Mod.Settings.TE
 	if ValueAi == nil then
 		ValueAi = 4 						--Normally it's 4 
@@ -68,7 +68,7 @@ function Client_PresentConfigureUI(rootParent)
 	if ValueVP == nil then
 		ValueVP = false
 	end
-	if ValueADP == nil then
+	if ValueACS == nil then
 		ValueADP = false
 	end
 	if ValueTE == nil then
@@ -201,7 +201,7 @@ function Client_PresentConfigureUI(rootParent)
 	end
 
 	function cooperationSettingsFnt(check)
-		ValueADP = check
+		ValueACS = check
 		if(check)then
 			coopWin = "CooperationWindow"
 			AddSubWindow(mainWin, coopWin);
@@ -254,7 +254,7 @@ function Client_PresentConfigureUI(rootParent)
 		ValueVP = check
 	end
 	
-	if(ValueADP)then
+	if(ValueACS)then
 		cooperationSettingsFnt(true)
 	end
 end

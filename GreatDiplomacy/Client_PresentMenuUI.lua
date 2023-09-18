@@ -128,6 +128,16 @@ function yourRelationsWithFnt(key, name, color, level)
     CreateEmpty(vert)
     labelCurrentRelation = CreateLabel(vert).SetText("Currently: "..relationLevel[level])
     CreateEmpty(vert)
+    labelPartOf = CreateLabel(vert).SetText("He is part of:")
+    coops = Mod.PublicGameData.Cooperations
+    listCoopsPartOf = {}
+    for coopName, coop in pairs(coops) do
+        for i, id in ipairs(coop) do
+            if id == key then
+                listCoopsPartOf[coopName] = CreateLabel(vert).SetText(coopName.. ", "..coopTypes[coop.Type])
+            break
+        end
+    end
     if(level ~= 1)then
         CreateEmpty(vert)
         labelUpgrade = CreateButton(vert).SetText("Upgrade to: "..relationLevel[level-1]).SetOnClick(function()
@@ -152,7 +162,7 @@ end;
 function globalRelationsFnt()       -- The diplomatic relations of all the players
     DestroyWindow();
     SetWindow("globalRelations")
-    labelYourRelations = CreateLabel(vert).SetText("Whose relations do you want to see?:")
+    labelYourRelations = CreateLabel(vert).SetText("Whose relations do you want to see?")
     CreateEmpty(vert)
     CreateEmpty(vert)
     listPlayers={}
@@ -160,7 +170,7 @@ function globalRelationsFnt()       -- The diplomatic relations of all the playe
         if (Game.Us.ID ~= key) then
             local name = player.DisplayName(nil, true)
             local color = player.Color.Name
-            listPlayers[key] = CreateButton(vert).SetText(name.."; "..color).SetOnClick(function()
+            listPlayers[key] = CreateButton(vert).SetText(name.." ("..color..")").SetOnClick(function()
                 theirRelationsFnt(key, name)
             end);
         end
@@ -436,8 +446,8 @@ function lookIntoCooperation(name, w) --isin, wheter whoever is calling the func
         end)
     end
     CreateEmpty(vert)
-    moreSettings = CreateButton(vert).SetText("Ulterior settings").SetOnClick(function()
-        ulteriorSettings(name)
+    moreSettings = CreateButton(vert).SetText("Additional settings").SetOnClick(function()
+        ulteriorSettings(name, w)
     end)
     CreateEmpty(vert)
     CreateEmpty(vert)
@@ -598,4 +608,32 @@ function decidePR(name, id, n)
     actualPl.N = n
     payload.Content = actualPl
     Game.SendGameCustomMessage("Waiting...", payload, function()    showedreturnmessage = false; end);
+end
+
+function ulteriorSettings(name, w)
+    DestroyWindow();
+    SetWindow("ulteriorSettings")
+    coop = Mod.PublicGameData.Cooperations[name]
+    labelCooperationName = CreateLabel(vert).SetText(name..", all settings:")
+    CreateEmpty(vert)
+    CreateEmpty(vert)
+    labelCooperationType = CreateLabel(vert).SetText(coopTypes[coop.Type])
+    CreateEmpty(vert)
+    if(coop.Type == Empire)then
+        labelCooperationLeader = CreateLabel(vert).setText("Lead by "..coop.Leader)
+        CreateEmpty(vert)
+    end
+    labelCooperationMembersNumber = CreateLabel(vert).SetText("Number of members: "..#coop.Members)
+    CreateEmpty(vert)
+    CreateEmpty(vert)
+    labelCooperationMembersList = CreateLabel(vert).SetText("List of members:")
+    CreateEmpty(vert)
+    listMembers = {}
+    for i, member in ipairs(coop.Members) do
+        listMembers[i] = CreateLabel(vert).SetText(member)
+        CreateEmpty(vert)
+    end
+    back = CreateButton(vert).SetText("Go back").SetOnClick(function()
+        lookIntoCooperation(name, w)
+    end;)
 end

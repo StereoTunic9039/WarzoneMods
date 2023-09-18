@@ -264,5 +264,5 @@ function Client_SaveConfigureUI(alert)
 	Mod.Settings.LA = ValueLA
 	Mod.Settings.UA = ValueUA
 	Mod.Settings.VP = ValueVP
-	Mod.Settings.ADP = ValueADP
+	Mod.Settings.ACS = ValueACS
 end  				-- Sets straight every unwanted input and such 
