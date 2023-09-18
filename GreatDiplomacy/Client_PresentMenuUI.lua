@@ -136,20 +136,21 @@ function yourRelationsWithFnt(key, name, color, level)
             if id == key then
                 listCoopsPartOf[coopName] = CreateLabel(vert).SetText(coopName.. ", "..coopTypes[coop.Type])
             break
+            end
         end
     end
     if(level ~= 1)then
         CreateEmpty(vert)
         labelUpgrade = CreateButton(vert).SetText("Upgrade to: "..relationLevel[level-1]).SetOnClick(function()
             changeLevel(key, -1)
-            yourRelationsFnt()
+            writeMenu()
         end);
     end
     if(level ~= 7)then
         CreateEmpty(vert)
         labelDowngrade = CreateButton(vert).SetText("Downgrade to: "..relationLevel[level+1]).SetOnClick(function()
             changeLevel(key, 1)
-            yourRelationsFnt()
+            writeMenu()
         end);
     end
     CreateEmpty(vert)
@@ -630,10 +631,14 @@ function ulteriorSettings(name, w)
     CreateEmpty(vert)
     listMembers = {}
     for i, member in ipairs(coop.Members) do
-        listMembers[i] = CreateLabel(vert).SetText(member)
-        CreateEmpty(vert)
+        for pid, player in pairs(Game.Game.Players) do
+            if pid == member then    
+                listMembers[i] = CreateLabel(vert).SetText(player.DisplayName(nil, true))
+                CreateEmpty(vert)
+            end
+        end
     end
     back = CreateButton(vert).SetText("Go back").SetOnClick(function()
         lookIntoCooperation(name, w)
-    end;)
+    end)
 end
