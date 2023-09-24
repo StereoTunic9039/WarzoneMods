@@ -73,4 +73,5 @@ function Client_SaveConfigureUI(alert)
 
 	Mod.Settings.WeakenBlockades.percentualOrFixed  = percentualOrFixed
 	Mod.Settings.WeakenBlockades.appliesToAllNeutrals = appliesToAllNeutrals
+	Mod.Settings.WeakenBlockades.ADVANCEDVERSION = ADVANCEDVERSION
 end  				-- Sets straight every unwanted input and such 

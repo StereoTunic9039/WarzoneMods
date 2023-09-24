@@ -16,6 +16,7 @@ function Client_PresentConfigureUI(rootParent)
 	delayFromStart = Mod.Settings.WeakenBlockades.delayFromStart
 	appliesToAllNeutrals = Mod.Settings.WeakenBlockades.appliesToAllNeutrals
 	appliesToMinArmies = Mod.Settings.WeakenBlockades.appliesToMinArmies
+	ADVANCEDVERSION = Mod.Settings.WeakenBlockades.ADVANCEDVERSION
 
 	if percentualOrFixed == nil then
 		percentualOrFixed = false
@@ -34,6 +35,9 @@ function Client_PresentConfigureUI(rootParent)
 	end
 	if appliesToMinArmies == nil then
 		appliesToMinArmies = 25
+	end
+	if ADVANCEDVERSION == nil then
+		ADVANCEDVERSION = false
 	end
 
 
@@ -118,6 +122,13 @@ function Client_PresentConfigureUI(rootParent)
 	CreateCheckBox(atanCont).SetIsChecked(appliesToAllNeutrals).SetText("Applies to all neutrals").SetOnValueChanged(function(IsChecked) showedreturnmessage = false; appliesToFnt(IsChecked) end)
 	if appliesToAllNeutrals == false then
 		appliesToFnt(appliesToAllNeutrals)
+	end
+
+	SetWindow(mainWin)
+	local ADVVERCont = CreateVerticalLayoutGroup(mainContainer)
+	CreateCheckBox(ADVVERCont).SetIsChecked(ADVANCEDVERSION).SetText("Use advanced version").SetOnValueChanged(function(IsChecked) showedreturnmessage = false; setADVVER(IsChecked) end)
+	function setADVVER(check)
+		ADVANCEDVERSION = check
 	end
 
 end
