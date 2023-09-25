@@ -47,7 +47,7 @@ function Client_PresentConfigureUI(rootParent)
 
 	local mainContainer = CreateVerticalLayoutGroup(rootParent)     --The main container I guess
 
-	local pofCont = CreateVerticalLayoutGroup(mainContainer)
+	local pofCont = CreateVerticalLayoutGroup(mainContainer)		-- What's the type of army removal (percentual or fixed)
 	CreateCheckBox(pofCont).SetIsChecked(percentualOrFixed).SetText("The removal of armies will be of a fixed amount instead of a percentual one").SetOnValueChanged(function(IsChecked) showedreturnmessage = false; typeOfRemovalFnt(IsChecked) end)
 	if (percentualOrFixed) then
 		farWin = "fixedAmountRemovalWindow"

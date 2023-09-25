@@ -2,14 +2,14 @@ require("consolelog")
 
 function Server_AdvanceTurn_End(game, addNewOrder)
 
-	local territories = game.ServerGame.LatestTurnStanding.Territories --.GameStanding.Territories
-	local alreadyChecked = {}
+	local territories = game.ServerGame.LatestTurnStanding.Territories 
+	local alreadyChecked = {}			-- To avoid checking territories twice in the advanced version
 	WB = Mod.Settings.WeakenBlockades
 
 	function baseVersion(tid, nterritory)
 		connectedTerritories = game.Map.Territories[tid].ConnectedTo
 		connectedTerritoriesOwners = {}
-		for ID, _ in pairs(connectedTerritories) do
+		for ID, _ in pairs(connectedTerritories) do		-- checks who are all the owners of the bordering territories
 			if not connectedTerritoriesOwners[territories[ID].OwnerPlayerID] then
 				connectedTerritoriesOwners[territories[ID].OwnerPlayerID] = true
 			end
@@ -17,22 +17,22 @@ function Server_AdvanceTurn_End(game, addNewOrder)
 		local length = 0
 		for _ in pairs(connectedTerritoriesOwners) do
 			length = length + 1
-		end
-		if(length == 1 and ( next(connectedTerritoriesOwners) ~= WL.PlayerID.Neutral))then
-			local negArmies
-			if(WB.percentualOrFixed)then
-				if(WB.fixedArmiesRemoved > nterritory.NumArmies.NumArmies)then
-					negArmies = -nterritory.NumArmies.NumArmies
-				else
-					negArmies = -WB.fixedArmiesRemoved
+		end			-- counts how many owners there are  (It's a bit inefficent and could be optimized, but it shouldn't be that heavy anyway)
+		if(length == 1 and ( next(connectedTerritoriesOwners) ~= WL.PlayerID.Neutral))then			-- if there is only one owner and they're a player
+			local negArmies			-- the armies that'll be removed
+			if(WB.percentualOrFixed)then	
+				if(WB.fixedArmiesRemoved > nterritory.NumArmies.NumArmies)then		-- if the armies removed are more than the armies on the territory 
+					negArmies = -nterritory.NumArmies.NumArmies						-- remove a total of armies equal to the armies on the territory
+				else																-- else
+					negArmies = -WB.fixedArmiesRemoved								-- remove the presetted amount of armies
 				end
 			else
-				negArmies = -((nterritory.NumArmies.NumArmies * WB.percentualArmiesRemoved) / 100)
+				negArmies = -((nterritory.NumArmies.NumArmies * WB.percentualArmiesRemoved) / 100)		-- remove the % amount 
 			end
-			local decrement = WL.TerritoryModification.Create(tid);
+			local decrement = WL.TerritoryModification.Create(tid);		
 			decrement.AddArmies = negArmies 
 			local reduction = WL.GameOrderEvent.Create(next(connectedTerritoriesOwners), "Decrease armies in " .. game.Map.Territories[tid].Name, {}, {decrement});
-			addNewOrder(reduction)
+			addNewOrder(reduction)			-- all the creating order and whatnot
 		end  
 	end
 
@@ -97,8 +97,8 @@ function Server_AdvanceTurn_End(game, addNewOrder)
 		end
 	end
 
-	if game.ServerGame.Game.TurnNumber >= WB.delayFromStart then
-		for tid, nterritory in pairs(territories) do
+	if game.ServerGame.Game.TurnNumber >= WB.delayFromStart then	-- just a good load of checking if the territory meets the mod's criterias
+		for tid, nterritory in pairs(territories) do	
 			if(nterritory.IsNeutral)then
 				if(WB.appliesToAllNeutrals or WB.appliesToMinArmies <= nterritory.NumArmies.NumArmies)then
 					if(WB.ADVANCEDVERSION)then

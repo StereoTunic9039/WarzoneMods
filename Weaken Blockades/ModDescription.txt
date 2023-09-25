@@ -1,1 +1,1 @@
-~=
+This mod removes a quantity of armies from neutral territories when they are sorrounded by the same player, this avoids large stacks of neutral to function as wastelands instead of blockades. The advanced version is most likely slower but affects group of neutral territories up to 5 of distance between extremes as well.
