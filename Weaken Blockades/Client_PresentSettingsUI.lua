@@ -11,12 +11,12 @@ function Client_PresentSettingsUI(rootParent)
     UI.CreateLabel(vert).SetText(WB.delayFromStart .. " turns must pass before the mod may have effect").SetColor('#FFFF4E');
     
     if WB.appliesToAllNeutrals then
-        UI.CreateLabel(vert).SetText("It applies to all neutral territories")
+        UI.CreateLabel(vert).SetText("It applies to all neutral territories").SetColor('#FFFF4E')
     else
-        UI.CreateLabel(vert).SetText("It applies only to territories with at least " .. WB.appliesToMinArmies)
+        UI.CreateLabel(vert).SetText("It applies only to territories with at least " .. WB.appliesToMinArmies .. "armies").SetColor('#FFFF4E')
     end
 
     if WB.ADVANCEDVERSION then
-        UI.CreateLabel(vert).SetText("This game is using the advanced version!")
+        UI.CreateLabel(vert).SetText("This game is using the advanced version!").SetColor('#FF0000')
     end
 end
