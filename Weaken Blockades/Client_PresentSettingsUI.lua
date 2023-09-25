@@ -1,6 +1,5 @@
 function Client_PresentSettingsUI(rootParent)
 
-    local types  = {true = "fixed at ", false = "percentual at "}
 	local WB = Mod.Settings.WeakenBlockades
     local vert = UI.CreateVerticalLayoutGroup(rootParent);	
     if WB.percentualOrFixed then
