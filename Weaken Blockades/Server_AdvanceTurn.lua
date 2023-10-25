@@ -5,6 +5,7 @@ function Server_AdvanceTurn_End(game, addNewOrder)
 	local territories = game.ServerGame.LatestTurnStanding.Territories 
 	local alreadyChecked = {}			-- To avoid checking territories twice in the advanced version
 	WB = Mod.Settings.WeakenBlockades
+	--tblprint(game.ServerGame.Game.Players)
 
 	function baseVersion(tid, nterritory)
 		connectedTerritories = game.Map.Territories[tid].ConnectedTo
@@ -39,8 +40,20 @@ function Server_AdvanceTurn_End(game, addNewOrder)
 	function advancedVersion(tid, nterritory)
 		if not alreadyChecked[tid] then
 			groupNeutrals = {[tid] = true}
-			playersBorderingGroup = {}
+			terrToCheck = {}
+			pbg = nil  	-- the player bordering the chunk of territories
 			local result = thaSearch(tid, 0)
+			tblprint(terrToCheck)
+			tblprint(groupNeutrals)
+			if(result ~= 0 and terrToCheck ~= nil and terrToCheck ~= {})then
+				for id, _ in pairs(terrToCheck) do
+					if not groupNeutrals[id] then
+						result = 0;
+						break;
+					end
+				end
+			end
+			print(result)
 			if(result ~= 0)then
 				local length = 0
 				for _ in pairs(groupNeutrals) do
@@ -53,15 +66,28 @@ function Server_AdvanceTurn_End(game, addNewOrder)
 						else
 							negArmies = -WB.fixedArmiesRemoved
 						end
-						negArmies = negArmies / length
 					else
 						negArmies = -((territories[id].NumArmies.NumArmies * WB.percentualArmiesRemoved) / 100)
 						negArmies = negArmies / length
 					end
 					local decrement = WL.TerritoryModification.Create(id);
 					decrement.AddArmies = negArmies 
-					local reduction = WL.GameOrderEvent.Create(next(playersBorderingGroup), "Decrease armies in " .. game.Map.Territories[id].Name, {}, {decrement});
+					local reduction
+					if pbg == nil then
+						reduction = WL.GameOrderEvent.Create(WL.PlayerID.Neutral, "Decrease armies in " .. game.Map.Territories[id].Name, {}, {decrement});
+					else 
+						reduction = WL.GameOrderEvent.Create(pbg, "Decrease armies in " .. game.Map.Territories[id].Name, {}, {decrement});
+					end
 					addNewOrder(reduction)
+					alreadyChecked[id] = true
+				end
+			else
+				if(terrToCheck ~= nil and terrToCheck ~= {})then
+					for id, _ in pairs(terrToCheck) do
+						alreadyChecked[id] = true
+					end
+				end
+				for id, _ in pairs(groupNeutrals) do
 					alreadyChecked[id] = true
 				end
 			end
@@ -70,12 +96,12 @@ function Server_AdvanceTurn_End(game, addNewOrder)
 
 	function thaSearch(tid, depth)
 		if(depth >= 3)then
-			return 0;
+			terrToCheck[tid] = true
 		else
 			local connectedTerritories = game.Map.Territories[tid].ConnectedTo
 			for ID, cterritory in pairs(connectedTerritories) do
 				if territories[ID].OwnerPlayerID == WL.PlayerID.Neutral then		-- if neutral
-					if not groupNeutrals[ID] then
+					if not groupNeutrals[ID] and not alreadyChecked[ID] then		-- and we haven't seen him yet
 						if(WB.appliesToAllNeutrals or WB.appliesToMinArmies <= territories[ID].NumArmies.NumArmies)then
 							groupNeutrals[ID] = true
 							local result = thaSearch(ID, depth+1)
@@ -86,12 +112,12 @@ function Server_AdvanceTurn_End(game, addNewOrder)
 							return 0;
 						end
 					end
-				elseif playersBorderingGroup[territories[ID].OwnerPlayerID] then	-- if we already saw them
-																						-- then just keep going	
-				elseif next(playersBorderingGroup) then								-- if there is someone else we already saw (that isn't the dude from the previous if)
-					return 0;															-- then fuck everything 
-				else																-- else
-					playersBorderingGroup[territories[ID].OwnerPlayerID] = true			-- they'll be the one we "already saw" in the future
+				elseif pbg == territories[ID].OwnerPlayerID then	-- if we already saw them
+																		-- then just keep going	
+				elseif pbg ~= nil then								-- if there is someone else we already saw (that isn't the dude from the previous if)
+					return 0;											-- then fuck everything 
+				else												-- else
+					pbg = territories[ID].OwnerPlayerID					-- they'll be the one we "already saw" in the future
 				end
 			end
 		end

@@ -13,7 +13,7 @@ function Client_PresentSettingsUI(rootParent)
     if WB.appliesToAllNeutrals then
         UI.CreateLabel(vert).SetText("It applies to all neutral territories").SetColor('#FFFF4E')
     else
-        UI.CreateLabel(vert).SetText("It applies only to territories with at least " .. WB.appliesToMinArmies .. "armies").SetColor('#FFFF4E')
+        UI.CreateLabel(vert).SetText("It applies only to territories with at least " .. WB.appliesToMinArmies .. " armies").SetColor('#FFFF4E')
     end
 
     if WB.ADVANCEDVERSION then
