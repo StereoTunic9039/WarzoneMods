@@ -48,7 +48,7 @@ function Server_AdvanceTurn_End(game, addNewOrder)
 			if(result ~= 0 and terrToCheck ~= nil and terrToCheck ~= {})then
 				for id, _ in pairs(terrToCheck) do
 					if not groupNeutrals[id] then
-						result = 0;
+						result = -1;
 						break;
 					end
 				end
@@ -81,7 +81,7 @@ function Server_AdvanceTurn_End(game, addNewOrder)
 					addNewOrder(reduction)
 					alreadyChecked[id] = true
 				end
-			else
+			elseif(result ~= -1)then
 				if(terrToCheck ~= nil and terrToCheck ~= {})then
 					for id, _ in pairs(terrToCheck) do
 						alreadyChecked[id] = true
