@@ -43,8 +43,6 @@ function Server_AdvanceTurn_End(game, addNewOrder)
 			terrToCheck = {}
 			pbg = nil  	-- the player bordering the chunk of territories
 			local result = thaSearch(tid, 0)
-			tblprint(terrToCheck)
-			tblprint(groupNeutrals)
 			if(result ~= 0 and terrToCheck ~= nil and terrToCheck ~= {})then
 				for id, _ in pairs(terrToCheck) do
 					if not groupNeutrals[id] then
@@ -53,12 +51,10 @@ function Server_AdvanceTurn_End(game, addNewOrder)
 					end
 				end
 			end
-			print(result)
-			if(result ~= 0)then
-				local length = 0
-				for _ in pairs(groupNeutrals) do
-					length = length + 1
-				end
+			if(result ~= 0 and result ~= -1)then
+				result = 1
+			end
+			if(result == 1)then
 				for id, _ in pairs(groupNeutrals) do
 					if(WB.percentualOrFixed)then
 						if(WB.fixedArmiesRemoved > territories[id].NumArmies.NumArmies)then
@@ -68,7 +64,6 @@ function Server_AdvanceTurn_End(game, addNewOrder)
 						end
 					else
 						negArmies = -((territories[id].NumArmies.NumArmies * WB.percentualArmiesRemoved) / 100)
-						negArmies = negArmies / length
 					end
 					local decrement = WL.TerritoryModification.Create(id);
 					decrement.AddArmies = negArmies 
@@ -81,7 +76,7 @@ function Server_AdvanceTurn_End(game, addNewOrder)
 					addNewOrder(reduction)
 					alreadyChecked[id] = true
 				end
-			elseif(result ~= -1)then
+			elseif(result == 0)then
 				if(terrToCheck ~= nil and terrToCheck ~= {})then
 					for id, _ in pairs(terrToCheck) do
 						alreadyChecked[id] = true
@@ -98,12 +93,12 @@ function Server_AdvanceTurn_End(game, addNewOrder)
 		if(depth >= 3)then
 			terrToCheck[tid] = true
 		else
+			groupNeutrals[tid] = true
 			local connectedTerritories = game.Map.Territories[tid].ConnectedTo
 			for ID, cterritory in pairs(connectedTerritories) do
 				if territories[ID].OwnerPlayerID == WL.PlayerID.Neutral then		-- if neutral
-					if not groupNeutrals[ID] and not alreadyChecked[ID] then		-- and we haven't seen him yet
+					if not alreadyChecked[ID] then-- and we haven't seen him yet
 						if(WB.appliesToAllNeutrals or WB.appliesToMinArmies <= territories[ID].NumArmies.NumArmies)then
-							groupNeutrals[ID] = true
 							local result = thaSearch(ID, depth+1)
 							if(result == 0)then
 								return 0;
@@ -111,6 +106,8 @@ function Server_AdvanceTurn_End(game, addNewOrder)
 						else
 							return 0;
 						end
+					else
+						return 0
 					end
 				elseif pbg == territories[ID].OwnerPlayerID then	-- if we already saw them
 																		-- then just keep going	
