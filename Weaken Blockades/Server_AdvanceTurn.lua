@@ -33,10 +33,12 @@ function Server_AdvanceTurn_End(game, addNewOrder)
 			local decrement = WL.TerritoryModification.Create(tid);		
 			decrement.AddArmies = negArmies 
 			local reduction = WL.GameOrderEvent.Create(next(connectedTerritoriesOwners), "Decrease armies in " .. game.Map.Territories[tid].Name, {}, {decrement});
+			local terr = game.Map.Territories[tid];
+			reduction.JumpToActionSpotOpt = WL.RectangleVM.Create(terr.MiddlePointX, terr.MiddlePointY, terr.MiddlePointX, terr.MiddlePointY)
 			addNewOrder(reduction)			-- all the creating order and whatnot
 		end  
 	end
-
+	
 	function advancedVersion(tid, nterritory)
 		if not alreadyChecked[tid] then
 			groupNeutrals = {[tid] = true}
@@ -73,6 +75,8 @@ function Server_AdvanceTurn_End(game, addNewOrder)
 					else 
 						reduction = WL.GameOrderEvent.Create(pbg, "Decrease armies in " .. game.Map.Territories[id].Name, {}, {decrement});
 					end
+					local terr = game.Map.Territories[tid];
+					reduction.JumpToActionSpotOpt = WL.RectangleVM.Create(terr.MiddlePointX, terr.MiddlePointY, terr.MiddlePointX, terr.MiddlePointY)
 					addNewOrder(reduction)
 					alreadyChecked[id] = true
 				end
