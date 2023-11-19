@@ -124,7 +124,7 @@ function Server_AdvanceTurn_End(game, addNewOrder)
 		end
 	end
 
-	if game.ServerGame.Game.TurnNumber >= WB.delayFromStart then	-- just a good load of checking if the territory meets the mod's criterias
+	if game.ServerGame.Game.TurnNumber > WB.delayFromStart then	-- just a good load of checking if the territory meets the mod's criterias
 		for tid, nterritory in pairs(territories) do	
 			if(nterritory.IsNeutral)then
 				if(WB.appliesToAllNeutrals or WB.appliesToMinArmies <= nterritory.NumArmies.NumArmies)then
