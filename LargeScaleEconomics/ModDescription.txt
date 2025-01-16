@@ -1,0 +1,7 @@
+
+
+~=
+
+
+
+        --addOrder(WL.GameOrderCustom.Create(Game.Us.ID, "Buy Fixed Reinforcement Card", "",{ [WL.ResourceType.Gold] = Mod.Settings.ReinforcementCardCost }));
