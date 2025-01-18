@@ -6,9 +6,9 @@ function Client_PresentConfigureUI(rootParent)
 	Init(rootParent)
     vert = GetRoot();
 
-	ValueAi = Mod.Settings.lvlAi    --Basic relation with AIs
-	if ValueAi == nil then
-		ValueAi = 4 						--Normally it's 4 
+	phase = Mod.Settings.phase    --Basic relation with AIs
+	if phase == nil then
+		phase = 1 						--Normally it's 1 
 	end
 	
 
@@ -23,7 +23,7 @@ function Client_PresentConfigureUI(rootParent)
 	SetWindow(f1Win)
 
 	local sliderLvlRelationsPc = CreateHorizontalLayoutGroup(phaseCont)			  -- Slider
-	labelLvlRelationsPc = CreateLabel(sliderLvlRelationsPc).SetText("You're on PHASE 1, use custom scenario distribution to deploy on each territory as many armies as the bonus for that territory (alone) should be worth. \n\n\ncheck below to activate phase 2")			  -- Label
+	labelLvlRelationsPc = CreateLabel(sliderLvlRelationsPc).SetText("You're on PHASE 1, use custom scenario distribution to deploy on each territory as many armies as the bonus for that territory (alone) should be worth. \n\ncheck below to activate phase 2")			  -- Label
 		CreateEmpty(phaseCont)
 		CreateEmpty(phaseCont)
 		CreateEmpty(phaseCont)
@@ -59,8 +59,9 @@ function Client_PresentConfigureUI(rootParent)
 		SetWindow(f1Win)
 
 		local sliderLvlRelationsPc = CreateHorizontalLayoutGroup(phaseCont)			  -- Slider
-		labelLvlRelationsPc = CreateLabel(sliderLvlRelationsPc).SetText("You're on PHASE 1, check below to activate phase 2")			  -- Label
+		labelLvlRelationsPc = CreateLabel(sliderLvlRelationsPc).SetText("You're on PHASE 1, use custom scenario distribution to deploy on each territory as many armies as the bonus for that territory (alone) should be worth. \n\ncheck below to activate phase 2")			  -- Label
 		CreateEmpty(phaseCont)
+		phase = 1
 
 		CreateCheckBox(phaseCont).SetIsChecked(false).SetText("Phase 2").SetOnValueChanged(function(IsChecked) showedreturnmessage = false; phase2Fnt(IsChecked) end)
 
@@ -79,7 +80,8 @@ function Client_PresentConfigureUI(rootParent)
 			SetWindow(f2Win)
 			
 			CreateCheckBox(phaseCont).SetIsChecked(true).SetText("Phase 2").SetOnValueChanged(function(IsChecked) showedreturnmessage = false; phase2Fnt(IsChecked) end)
-			
+			phase = 2
+
 			CreateEmpty(phaseCont)
 			labelInputCode = CreateLabel(phaseCont).SetText("You've selected phase 2, insert the code produced by phase 1")			  -- Label
 			codeInputField = CreateTextInputField(phaseCont)
