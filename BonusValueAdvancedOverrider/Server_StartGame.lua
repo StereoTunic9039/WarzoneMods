@@ -18,8 +18,6 @@ function Server_StartGame(game,standing)
 		end
 
 		Mod.PublicGameData = publicGameData 		-- updates it to the mod storage for future access
-	else
-		print("phase is 2", phase)
 	end
 
 end	 		
