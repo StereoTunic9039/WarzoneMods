@@ -12,6 +12,7 @@ function Client_PresentMenuUI(rootParent, setMaxSize, setScrollable, game, close
 	Init(rootParent)
     vert = GetRoot();
 	setMaxSize(450, 350);
+    phase = Mod.Settings.phase
     if(phase == 1)then          -- only have a working menu if you're in phase 1
 	    writeMenu()
     else
