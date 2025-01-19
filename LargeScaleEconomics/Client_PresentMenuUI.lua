@@ -50,43 +50,12 @@ function writeMenu()
     DestroyWindow()             -- With this you destroy the previous window
     SetWindow("Home");          -- With this you create the windown you need to create stuff on. This one is the home.    
 
-    if(Game.Us ~= nil)then      -- Only if you are a player you'll have diplomatic relations with players
         openYourRelations = CreateButton(vert).SetText("Your relations").SetOnClick(function()
             yourRelationsFnt();        -- This creates the button to see your diplomatic relations with the various players
         end);
-	end
 
-    if(Game.Us ~= nil)then      -- Only if you are a player you'll have diplomatic relations with players
-        openYourCooperations = CreateButton(vert).SetText("Cooperations you are part of").SetOnClick(function()
-            yourCooperationsFnt();        -- This creates the button to see your diplomatic relations with the various players
-        end);
-	end
 
-    if(Game.Us ~= nil)then      -- Only if you are a player you'll have diplomatic relations with players
-        craeteYourCooperation = CreateButton(vert).SetText("Create a cooperation").SetOnClick(function()
-            createCooperationsFnt();        -- This creates the button to see your diplomatic relations with the various players
-        end);
-	end
 
-    if(Game.Us ~= nil)then             -- Only if you are a player you'll have diplomatic relations with players
-        openYourActions = CreateButton(vert).SetText("Your actions").SetOnClick(function()
-            yourActionsFnt();        -- This creates the button to see your diplomatic actions with the various players
-        end);
-	end
-
-    if(Game.Us ~= nil)then             -- Only if you are a player you'll have diplomatic relations with players
-        offersReceived = CreateButton(vert).SetText("Offers received").SetOnClick(function() 
-            offersReceivedFnt();   -- No matter if you're a player or not, you'll be able to see the relations of everyone
-        end);
-	end
-
-    globalRelations = CreateButton(vert).SetText("Everyone's relations").SetOnClick(function() 
-        globalRelationsFnt();   -- No matter if you're a player or not, you'll be able to see the relations of everyone
-    end);
-    
-    globalCooperations = CreateButton(vert).SetText("All cooperations present").SetOnClick(function() 
-        globalCooperationsFnt();   -- No matter if you're a player or not, you'll be able to see the relations of everyone
-    end);
 end
 
 function  tablelength(T)
