@@ -6,15 +6,6 @@ require("consolelog")
     all it's contentes vanishes which is really useful.
 ]]--
 
-do
-    b32t = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v"}
-end
-
-do
-    b62t = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"}
-end
-
-
 function Client_PresentMenuUI(rootParent, setMaxSize, setScrollable, game, closeAll)
 	Game = game;
 	Init(rootParent)
@@ -26,60 +17,70 @@ end                             -- This part you shall not touch unless you're e
 function writeMenu()
     DestroyWindow()             -- With this you destroy the previous window
     SetWindow("Home");          -- With this you create the windown you need to create stuff on. This one is the home.    
-
+    if(rawCode == nil)then
+        rawCode = Mod.PublicGameData        -- Server_StartGame got all the bonuses new value associated with their ID
+    end
     code = ""
-    rawCode = Mod.PublicGameData        -- Server_StartGame got all the bonuses new value associated with their ID
+    --deltedCode = delta(rawCode)
+
+    for i, j in pairs(rawCode) do
+        code = code .. "{" .. i .. ", " .. j .. "}, "
+    end
+    code = string.sub(code, 1, #code - 2)
 
     labelOutputCode = CreateLabel(vert).SetText("Your code is:")
     CreateEmpty(vert)
-    openYourRelations = CreateTextInputField(vert).SetText(code).SetPreferredWidth(400)
+    copyOutputCode = CreateTextInputField(vert).SetText(code).SetPreferredWidth(400)
+    CreateEmpty(vert)
+    labelCopyCode = CreateLabel(vert).SetText("Use 'Ctrl + C' to copy")
+    CreateEmpty(vert)
+    CreateEmpty(vert)
+    manualChange = CreateButton(vert).SetText("Manually change specific bonuses now").SetOnClick(manualChangeFunction)
 end
 
-function  tablelength(T)
-	local count = 0;
-	for _, elem in pairs(T)do
-		count = count + 1;
-	end
-	return count;
-end         -- I don't even think I need this tbh
+function manualChangeFunction()
+    DestroyWindow()             -- With this you destroy the previous window
+    SetWindow("ChangeValue");          -- With this you create the windown you need to create stuff on. This one is the home.   
+    UI.InterceptNextBonusLinkClick(getID)
 
-function converter32(n)     -- for the value of the bonus
-    if(n>1000)then n=1000 end   -- decimal value (max 1000)
-    d = b32t[math.floor(n/32) +1]      
-    u = b32t[(n%32) +1]              -- idk how to explain just look at it its obvious 
-    du = d .. u             -- uniting unità and decine
-    return du;
+    labelWatchOut = CreateLabel(vert).SetText("ID of the Bonus (click on the bonus and it will be added automatically):")
+    bonusID = CreateTextInputField(vert).SetPreferredWidth(400).SetPlaceholderText("Click on a bonus")
+    labelWatchOut = CreateLabel(vert).SetText("Value of the bonus (Negative numbers are allowed, if blank or not a number it'll be counted as 0):")
+    bonusValue = CreateTextInputField(vert).SetPreferredWidth(400).SetPlaceholderText("Enter bonus value")
+    CreateEmpty(vert)
+    CreateEmpty(vert)
+
+    
+    buttons = CreateHorizontalLayoutGroup(vert)
+    save = CreateButton(buttons).SetText("Save").SetOnClick(saveUpdate)
+    CreateEmpty(buttons)
+    CreateEmpty(buttons)
+    CreateEmpty(buttons)
+    cancel = CreateButton(buttons).SetText("Cancel").SetOnClick(manualChangeFunction)
+    CreateEmpty(buttons)
+    CreateEmpty(buttons)
+    CreateEmpty(buttons)
+    leave = CreateButton(buttons).SetText("Leave").SetOnClick(writeMenu)
+    CreateEmpty(vert)
+    labelWatchOut = CreateLabel(vert).SetText("Save each change, leave deletes all that has not been saved.")
 end
 
-function converter62(n)     -- for the value of the IDs
-    if n>61 then u = -1 else
-        u = b62t[(n%62) +1]              -- idk how to explain just look at it its obvious 
-    end
-    return u;
+function getID(bonus)
+    if(bonus == nil)then return; end
+    ID = bonus.ID
+    bonusID.SetText(ID)
+    return ID;
 end
 
-function delta(array)           --to count the distance between IDs values
-    local keys = {}
-    for k in pairs(array) do
-        table.insert(keys, k)
-    end
-    
-    -- Step 2: Sort the keys
-    table.sort(keys)
-    
-    deltedArray = {}
-    i = #keys
-    while 1<i do
-        print(array[keys[i]])
-        deltedArray[i] = {keys[i] - keys[i-1], array[keys[i]]}
-        i = i-1
-    end
-    deltedArray[i] = {keys[i], array[keys[i]]}
-    
-    for k, j in pairs(deltedArray) do           -- so uhhhh future me figure it out. pushing to main right now :)
-        j[2] = converter32(j[2])
-        j[1] = converter62(j[1])
-    end
-
-    return deltedArray;
+function saveUpdate()
+    ID = bonusID.GetText()
+    Value = bonusValue.GetText()
+    ID = tonumber(ID)
+    Value = tonumber(Value)
+    if(ID == nil or ID ~= math.floor(ID) or ID < 0 or ID > 100000)then UI.Alert("Invalid Bonus ID"); return; end
+    if(Value == nil)then Value = 0; end
+    Value = math.floor(Value)
+    if(Value>1000)then Value = 1000; end
+    rawCode[ID] = Value
+    manualChangeFunction()
 end
