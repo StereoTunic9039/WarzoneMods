@@ -1,5 +1,6 @@
 require("UI")
 require("consolelog")  
+require("Server_StartGame")
 --[[
     Ok so basically with this the menu of the mod in game willwork on windows, 
     each time you want to add something you need to have a windown and when you destroy it
@@ -11,13 +12,19 @@ function Client_PresentMenuUI(rootParent, setMaxSize, setScrollable, game, close
 	Init(rootParent)
     vert = GetRoot();
 	setMaxSize(450, 350);
-	writeMenu()
+    if(phase == 1)then          -- only have a working menu if you're in phase 1
+	    writeMenu()
+    else
+        DestroyWindow()             -- With this you destroy the previous window even though there shouldnt be any
+        SetWindow("phase2");
+        labelaaaa = CreateLabel(vert).SetText("This is phase 2 therefore the menu isn't needed but I can't get rid of it")            -- just a label
+    end
 end                             -- This part you shall not touch unless you're expert which I'm not
 
 function writeMenu()
     DestroyWindow()             -- With this you destroy the previous window
     SetWindow("Home");          -- With this you create the windown you need to create stuff on. This one is the home.    
-    if(rawCode == nil)then
+    if(rawCode == nil)then                  -- unless we already updated something from the menu
         rawCode = Mod.PublicGameData        -- Server_StartGame got all the bonuses new value associated with their ID
     end
     code = ""
@@ -25,17 +32,17 @@ function writeMenu()
 
     for i, j in pairs(rawCode) do
         code = code .. "{" .. i .. ", " .. j .. "}, "
-    end
-    code = string.sub(code, 1, #code - 2)
+    end             -- make it readable
+    code = string.sub(code, 1, #code - 2)     -- got rid of ", " at the end
 
-    labelOutputCode = CreateLabel(vert).SetText("Your code is:")
-    CreateEmpty(vert)
-    copyOutputCode = CreateTextInputField(vert).SetText(code).SetPreferredWidth(400)
+    labelOutputCode = CreateLabel(vert).SetText("Your code is:")            -- just a label
+    CreateEmpty(vert)                                                       -- just an empty placeholder
+    copyOutputCode = CreateTextInputField(vert).SetText(code).SetPreferredWidth(400)            -- where the code will be written to be copied
     CreateEmpty(vert)
     labelCopyCode = CreateLabel(vert).SetText("Use 'Ctrl + C' to copy")
     CreateEmpty(vert)
     CreateEmpty(vert)
-    manualChange = CreateButton(vert).SetText("Manually change specific bonuses now").SetOnClick(manualChangeFunction)
+    manualChange = CreateButton(vert).SetText("Manually change specific bonuses now").SetOnClick(manualChangeFunction)          --if they want to change the value of specific bonuses
 end
 
 function manualChangeFunction()
@@ -66,10 +73,10 @@ function manualChangeFunction()
 end
 
 function getID(bonus)
-    if(bonus == nil)then return; end
-    ID = bonus.ID
-    bonusID.SetText(ID)
-    return ID;
+    if(bonus == nil)then return; end        -- if the call gets interrupted then just don't care
+    ID = bonus.ID                           -- if we do get a bonus back, get its ID
+    bonusID.SetText(ID)                     -- and set it to the text input
+    return;  
 end
 
 function saveUpdate()

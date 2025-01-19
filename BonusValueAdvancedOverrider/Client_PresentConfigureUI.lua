@@ -7,6 +7,7 @@ function Client_PresentConfigureUI(rootParent)
     vert = GetRoot();
 
 	phase = Mod.Settings.phase    --Basic relation with AIs
+	inputCode = Mod.Settings.inputCode
 	if phase == nil then
 		phase = 1 						--Normally it's 1 
 	end
@@ -40,17 +41,21 @@ function Client_PresentConfigureUI(rootParent)
 
 	function confirm()
 		
-		printSomething()
-		local inputCode = codeInputField.GetValue() -- getting month value
-		--if inputCode == nil or string.len(inputCode) == 0 then alert("Mod set up failed\nInput Code is absent") return
-		--else 
-		--	Mod.Settings.inputCode = inputCode
-		--end 
+		local inputCode = codeInputField.GetText() -- getting the code
+		if (#inputCode == 0 or inputCode == nil) then UI.Alert("Mod set up failed\nInput Code is absent") return
+		else
+			local array = {}
+			for key, value in string.gmatch(inputCode, "{(%d+), (%d+)}") do
+				array[tonumber(key)] = tonumber(value)
+			end
 
-	end
+			if #array == 0 then 
+				UI.Alert("Mod set up failed\nInput Code is not valid") 
+			else 
+				Mod.Settings.inputCode = array
+			end
+		end 
 
-	function printSomething()
-		print("something")
 	end
 
 	function phase1Fnt()
@@ -87,7 +92,7 @@ function Client_PresentConfigureUI(rootParent)
 			codeInputField = CreateTextInputField(phaseCont)
 			.SetPlaceholderText("Paste here")
 			.SetFlexibleWidth(1)
-			.SetCharacterLimit(1000)  -- Both united in the selection for Players relations
+			.SetCharacterLimit(100000000)  -- Both united in the selection for Players relations
 			CreateEmpty(phaseCont)
 			CreateEmpty(phaseCont)
 			CreateButton(phaseCont).SetText("Confirm").SetOnClick(confirm)
