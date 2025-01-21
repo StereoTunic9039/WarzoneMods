@@ -6,16 +6,9 @@ function Client_PresentConfigureUI(rootParent)
 
 	mainWin = "mainWindow"
 	costWin = "costWindow"
-	damgWin = "damageWindow"
-	funcWin = "functionalitiesWindow"
 
 	AddSubWindow(mainWin, costWin);
-	AddSubWindow(mainWin, damgWin);
-	AddSubWindow(mainWin, funcWin);
-
 	
-	AddSubWindow(damgWin, fdWin);
-	AddSubWindow(damgWin, pdWin);
 
 
     local isFixedCost = Mod.Settings.IsFixedCost;
@@ -30,10 +23,8 @@ function Client_PresentConfigureUI(rootParent)
     if IncreaseCost == nil then IncreaseCost = 10; end					-- fixed amount cost of landmines
 	local isFixedDamage = Mod.Settings.IsFixedDamage;
 	if isFixedDamage == nil then isFixedDamage = true; end					-- if true then the damage inflicted by landmines is a fixed amount, otherwise it's a % of the armies on the territory
-    local fixedDamageValue = Mod.Settings.FixedDamage;
-    if fixedDamageValue == nil then fixedDamageValue = 25; end					-- fixed amount damage inflicted by landmines
-	local percentualDamageValue = Mod.Settings.PercentualDamage;
-    if percentualDamageValue == nil then percentualDamageValue = 25; end			-- fixed amount damage inflicted by landmines
+    local damageValue = Mod.Settings.Damage;
+    if damageValue == nil then damageValue = 25; end					-- fixed amount damage inflicted by landmines
     local maxUnits = Mod.Settings.MaxUnits;
     if maxUnits == nil then maxUnits = 3; end							-- maximum number of landmines that a player can position
     --local cooldown = Mod.Settings.Cooldown;
@@ -43,6 +34,7 @@ function Client_PresentConfigureUI(rootParent)
 
 
 	function typeCost()
+		CreateLabel(root).SetText("COST").SetColor("#FF0000").SetPreferredHeight(20);
 		CreateLabel(root).SetText("Is the cost of a landmine fixed rather than progressive?").SetColor(textcolor);
 		typeCostInput = CreateCheckBox(root).SetIsChecked(isFixedCost).SetText("").SetOnValueChanged(function(IsChecked) showedreturnmessage = false; changeTypeCost(IsChecked) end)
 
@@ -53,18 +45,22 @@ function Client_PresentConfigureUI(rootParent)
 		isFixedCost = IsChecked
 		
 		if IsChecked then 
-			SetWindow(pcWin)
-			DestroyWindow(pcWin)
-			fcWin = "fixedCostWindow"
-			AddSubWindow(costWin, fcWin);
-			SetWindow(fcWin)
+			SetWindow(costWin)
+			DestroyWindow(costWin)
+			DestroyWindow(damgWin)
+			DestroyWindow(funcWin)
+			costWin = "CostWindow"
+			AddSubWindow(mainWin, costWin);
+			SetWindow(costWin)
 			fixedCost() 
 		else 
-			SetWindow(fcWin)
-			DestroyWindow(fcWin)
-			pcWin = "progressiveCostWindow"
-			AddSubWindow(costWin, pcWin);
-			SetWindow(pcWin)
+			SetWindow(costWin)
+			DestroyWindow(costWin)
+			DestroyWindow(damgWin)
+			DestroyWindow(funcWin)
+			costWin = "CostWindow"
+			AddSubWindow(mainWin, costWin);
+			SetWindow(costWin)
 			progressiveCost() 
 		end
 	end
@@ -74,6 +70,14 @@ function Client_PresentConfigureUI(rootParent)
 		unitCostInput = CreateNumberInputField(root).SetSliderMaxValue(100).SetSliderMinValue(5).SetValue(unitCost);
 
 		CreateEmpty(root).SetPreferredHeight(5);
+
+
+
+		damgWin = "damageWindow"
+		AddSubWindow(mainWin, damgWin);
+		typeDamage()
+		SetWindow(damgWin)
+		damage()
 	end
 
 	function progressiveCost()
@@ -93,30 +97,40 @@ function Client_PresentConfigureUI(rootParent)
 		IncreaseCostInput = CreateNumberInputField(root).SetSliderMaxValue(50).SetSliderMinValue(1).SetValue(IncreaseCost);
 
 		CreateEmpty(root).SetPreferredHeight(5);
+
+
+
+		damgWin = "damageWindow"
+		AddSubWindow(mainWin, damgWin);
+		typeDamage()
+		SetWindow(damgWin)
+		damage()
 	end
     
 	function typeDamage()
+		CreateLabel(root).SetText("DAMAGE").SetColor("#FF0000").SetPreferredHeight(20);
 		CreateLabel(root).SetText("Is the damage inflicted by a landmine a fixed number rather than %?").SetColor(textcolor);
 		typeDamageInput = CreateCheckBox(root).SetText("").SetIsChecked(isFixedDamage)
 
 		CreateEmpty(root).SetPreferredHeight(5);
 	end
 
-	function fixedDamage()
-		CreateLabel(root).SetText("The damage this unit will inflict upon exploding").SetColor(textcolor);
-		fixedDamageInput = CreateNumberInputField(root).SetSliderMaxValue(100).SetSliderMinValue(1).SetValue(fixedDamageValue);
+	function damage()
+		CreateLabel(root).SetText("The number/percentage of armies that will be killed upon this unit explosion").SetColor(textcolor);
+		damageInput = CreateNumberInputField(root).SetSliderMaxValue(100).SetSliderMinValue(1).SetValue(damageValue);
 		
 		CreateEmpty(root).SetPreferredHeight(5);
-	end
 
-	function percentualDamage()
-		CreateLabel(root).SetText("The percentage of armies that will be killed upon this unit explosion").SetColor(textcolor);
-		percentualDamageInput = CreateNumberInputField(root).SetSliderMaxValue(100).SetSliderMinValue(1).SetValue(percentualDamageValue);
-		
-		CreateEmpty(root).SetPreferredHeight(5);
+
+
+		funcWin = "functionalitiesWindow"
+ 		AddSubWindow(mainWin, funcWin);
+		SetWindow(funcWin)
+		maxUnitsFunction()
 	end
     
 	function maxUnitsFunction()
+		CreateLabel(root).SetText("OTHER").SetColor("#FF0000").SetPreferredHeight(20);
 		CreateLabel(root).SetText("The maximum number of landmines a player may control (set 0 if there should be no limit)").SetColor(textcolor);
 		maxUnitsInput = CreateNumberInputField(root).SetSliderMaxValue(10).SetSliderMinValue(0).SetValue(maxUnits);
 		
@@ -137,34 +151,12 @@ function Client_PresentConfigureUI(rootParent)
 
 
 
-	SetWindow(costWin)
 	typeCost()
+	SetWindow(costWin)
 	if isFixedCost then
-		fcWin = "fixedCostWindow"
-		AddSubWindow(costWin, fcWin);
-		SetWindow(fcWin)
 		fixedCost()
 	else
-		pcWin = "progressiveCostWindow"
-		AddSubWindow(costWin, pcWin);
-		SetWindow(pcWin)
 		progressiveCost()
 	end
 
-	SetWindow(damgWin)
-	typeDamage()
-	if isFixedDamage then
-		fdWin = "fixedDamageWindow"
-		AddSubWindow(damgWin, fdWin);
-		SetWindow(fdWin)
-		fixedDamage()
-	else	
-		pdWin = "percentualDamageWindow"
-		AddSubWindow(damgtWin, pdWin);
-		SetWindow(pdWin)
-		percentualDamage()
-	end
-
-	SetWindow(funcWin)
-	maxUnitsFunction()
 end

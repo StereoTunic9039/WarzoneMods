@@ -8,10 +8,6 @@ function Client_SaveConfigureUI(alert)
         Mod.Settings.IncreaseCost = IncreaseCostInput.GetValue();
     end;
     Mod.Settings.IsFixedDamage = typeDamageInput.GetIsChecked();
-    if Mod.Settings.IsFixedDamage then
-        Mod.Settings.FixedDamage = fixedDamageInput.GetValue();
-    else
-        Mod.Settings.PercentualDamage = percentualDamageInput.GetValue();
-    end
+    Mod.Settings.Damage = damageInput.GetValue();
     Mod.Settings.MaxUnits = maxUnitsInput.GetValue();
 end
