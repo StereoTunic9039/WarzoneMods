@@ -8,7 +8,32 @@ function Client_PresentCommercePurchaseUI(rootParent, game, close)
     colors = GetColors();
 
     local line = CreateHorz(root);
-    CreateLabel(line).SetText("Landmines are a special type of unit that cannot be moved. When a territory with a landmine gets attacked it will explode, killing " .. Mod.Settings.Damage .. " attackers. A landmine costs " .. Mod.Settings.UnitCost .. ", but note you're only allowed a maximum of " .. Mod.Settings.MaxUnits .. "!").SetColor(colors.TextColor);
+    local theText = "Landmines are a special type of unit that cannot be moved. When a territory with a landmine gets attacked it will explode, killing "
+    if Mod.Settings.IsFixedDamage then 
+        theText = theText .. Mod.Settings.Damage .. " attackers. You can buy a landmine for "
+    else
+        theText = theText .. Mod.Settings.Damage .. "% of the attackers. You can buy a landmine for "
+    end
+    local gold; local N = 2
+    if Mod.Settings.IsFixedCost then
+        gold = Mod.Settings.UnitCost
+    else
+        if Mod.Settings.ArithmeticIncrease then
+            gold = Mod.Settings.UnitInitialCost + N
+        else
+            gold = Mod.Settings.UnitInitialCost * N
+        end
+    end
+    theText = theText .. gold .. " gold"
+    if Mod.Settings.MaxUnits == 0 then 
+        theText = theText .. "."
+    elseif (Mod.Settings.MaxUnits - N) == 0 then 
+        theText = theText .. ", however at this moment you already control the maximum number that is allowed by the game."
+    else 
+        theText = theText .." and you're allowed to buy " .. Mod.Settings.MaxUnits .. " more of them."
+    end
+
+    CreateLabel(line).SetText(theText).SetColor(colors.TextColor);
     CreateButton(line).SetText("Purchase Landmine").SetColor(colors["Dark Green"]).SetOnClick(buyLandmine).SetPreferredWidth(250);
 end
 
@@ -25,8 +50,8 @@ function buyLandmine()
             units = units + 1;
         end
     end
-    if units >= Mod.Settings.MaxUnits then
-        UI.Alert("You already have the maximum amount of Landmines");
+    if units >= Mod.Settings.MaxUnits and not (Mod.Settings.MaxUnits == 0) then
+        UI.Alert("You already have the maximum amount of Landmines, remember that you can delete your purchase orders form the orders menu.");
         return;
     end
     Game.CreateDialog(pickTerr)
@@ -38,7 +63,7 @@ function pickTerr(rootParent, setMaxSize, setScrollable, game, close)
     Init(rootParent);
     root = GetRoot().SetFlexibleWidth(1);
 
-    selected = CreateButton(root).SetText("Pick territory").SetColor(colors.Orange).SetOnClick(selectTerr);
+    selected = CreateButton(root).SetText("Change territory").SetColor(colors.Orange).SetOnClick(selectTerr);
     label = CreateLabel(root).SetText("").SetColor(colors.TextColor);
     purchase = CreateButton(root).SetText("Purchase Landmine").SetColor(colors.Green).SetOnClick(purchaseLandmine).SetInteractable(false);
     selectTerr();
@@ -58,6 +83,7 @@ function terrClicked(terrDetails)
     else
         if Game.LatestStanding.Territories[terrDetails.ID].OwnerPlayerID ~= Game.Us.ID then
             label.SetText("You can only receive a Landmine on a territory you own. Please try again");
+            purchase.SetInteractable(false);
         else
             label.SetText("Selected territory: " .. terrDetails.Name);
             selectedTerr = terrDetails;

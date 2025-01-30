@@ -20,7 +20,7 @@ function Client_PresentConfigureUI(rootParent)
 	local arithmeticIncrease = Mod.Settings.ArithmeticIncrease;
 	if arithmeticIncrease == nil then arithmeticIncrease = true; end	-- if true then the cost of landmines is a fixed amount, otherwise it progressively increases 
 	local IncreaseCost = Mod.Settings.IncreaseCost;
-    if IncreaseCost == nil then IncreaseCost = 10; end					-- fixed amount cost of landmines
+    if IncreaseCost == nil then IncreaseCost = 5; end					-- fixed amount cost of landmines
 	local isFixedDamage = Mod.Settings.IsFixedDamage;
 	if isFixedDamage == nil then isFixedDamage = true; end					-- if true then the damage inflicted by landmines is a fixed amount, otherwise it's a % of the armies on the territory
     local damageValue = Mod.Settings.Damage;
