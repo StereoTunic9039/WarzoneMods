@@ -34,5 +34,7 @@ function Client_SaveConfigureUI(alert)
     if Mod.Settings.MaxUnits < 0 then Mod.Settings.MaxUnits = 0;
     elseif Mod.Settings.MaxUnits > 1000 then Mod.Settings.MaxUnits = 1000; end
 
+    Mod.Settings.TurnNeutral = false
+
     tblprint(Mod.Settings)
 end
