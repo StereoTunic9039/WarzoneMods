@@ -14,23 +14,34 @@ function Client_PresentCommercePurchaseUI(rootParent, game, close)
     else
         theText = theText .. Mod.Settings.Damage .. "% of the attackers. You can buy a landmine for "
     end
-    local gold; local N = 2
+    local gold; 
+    local units = 0;
+    for _, terr in pairs(Game.LatestStanding.Territories) do
+        if terr.OwnerPlayerID == Game.Us.ID then
+            units = units + getNLandmines(terr);
+        end
+    end
+    for _,order in pairs(Game.Orders) do
+        if order.proxyType == "GameOrderCustom" and startsWith(order.Payload, "BuyLandmine_") then
+            units = units + 1;
+        end
+    end
     if Mod.Settings.IsFixedCost then
         gold = Mod.Settings.UnitCost
     else
         if Mod.Settings.ArithmeticIncrease then
-            gold = Mod.Settings.UnitInitialCost + N
+            gold = Mod.Settings.UnitInitialCost + (units * Mod.Settings.IncreaseCost)
         else
-            gold = Mod.Settings.UnitInitialCost * N
+            gold = Mod.Settings.UnitInitialCost * (Mod.Settings.IncreaseCost ^ units)
         end
     end
     theText = theText .. gold .. " gold"
     if Mod.Settings.MaxUnits == 0 then 
         theText = theText .. "."
-    elseif (Mod.Settings.MaxUnits - N) == 0 then 
+    elseif (Mod.Settings.MaxUnits - units) == 0 then 
         theText = theText .. ", however at this moment you already control the maximum number that is allowed by the game."
     else 
-        theText = theText .." and you're allowed to buy " .. Mod.Settings.MaxUnits .. " more of them."
+        theText = theText .." and you're allowed to buy " .. Mod.Settings.MaxUnits - units.. " more of them."
     end
 
     CreateLabel(line).SetText(theText).SetColor(colors.TextColor);
@@ -51,7 +62,7 @@ function buyLandmine()
         end
     end
     if units >= Mod.Settings.MaxUnits and not (Mod.Settings.MaxUnits == 0) then
-        UI.Alert("You already have the maximum amount of Landmines, remember that you can delete your purchase orders form the orders menu.");
+        UI.Alert("You already have the maximum amount of Landmines that is allowed by the game, remember that you can delete your purchase orders form the orders menu.");
         return;
     end
     Game.CreateDialog(pickTerr)
@@ -102,16 +113,38 @@ function purchaseLandmine()
         end
     end
     if index == 0 then index = #orders + 1; end
-    table.insert(orders, index, WL.GameOrderCustom.Create(Game.Us.ID, "Buy a Landmine on " .. selectedTerr.Name, "BuyLandmine_" .. selectedTerr.ID, {[WL.ResourceType.Gold] = Mod.Settings.UnitCost}, WL.TurnPhase.Deploys + 1));
+    local cost
+    if Mod.Settings.IsFixedCost then 
+        cost = Mod.Settings.UnitCost
+    else
+        local units = 0;
+        for _, terr in pairs(Game.LatestStanding.Territories) do
+            if terr.OwnerPlayerID == Game.Us.ID then
+                units = units + getNLandmines(terr);
+            end
+        end
+        for _,order in pairs(Game.Orders) do
+            if order.proxyType == "GameOrderCustom" and startsWith(order.Payload, "BuyLandmine_") then
+                units = units + 1;
+            end
+        end
+        if Mod.Settings.ArithmeticIncrease then 
+            cost = Mod.Settings.UnitInitialCost + (Mod.Settings.IncreaseCost * units)
+        else
+            cost = Mod.Settings.UnitInitialCost * (Mod.Settings.IncreaseCost ^ units)
+        end
+    end
+    table.insert(orders, index, WL.GameOrderCustom.Create(Game.Us.ID, "Buy a Landmine on " .. selectedTerr.Name, "BuyLandmine_" .. selectedTerr.ID, {[WL.ResourceType.Gold] = cost}, WL.TurnPhase.Deploys));
     Game.Orders = orders;
     Close();
 end
 
 function getNLandmines(terr)
     local ret = 0;
-    for _, sp in pairs(terr.NumArmies.SpecialUnits) do
-        if sp.proxyType == "CustomSpecialUnit" and sp.Name == "Landmine" then
-            ret = ret + 1;
+    local lp = Mod.PublicGameData.LandminesPlaced
+    for id, n in pairs(lp) do
+        if terr.ID == id then 
+            ret = ret + n;
         end
     end
     return ret;

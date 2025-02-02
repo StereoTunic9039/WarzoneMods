@@ -27,6 +27,8 @@ function Client_PresentConfigureUI(rootParent)
     if damageValue == nil then damageValue = 25; end					-- fixed amount damage inflicted by landmines
     local maxUnits = Mod.Settings.MaxUnits;
     if maxUnits == nil then maxUnits = 3; end							-- maximum number of landmines that a player can position
+	local turnNeutral = Mod.Settings.TurnNeutral;
+	if turnNeutral == nil then turnNeutral = true; end
     --local cooldown = Mod.Settings.Cooldown;
     --if cooldown == nil then cooldown = false; end       				-- if true then there is a cooldown between each time a player positions a landmine
 
