@@ -76,10 +76,12 @@ function Server_AdvanceTurn_Order(game, order, orderResult, skipThisOrder, addNe
             end
             local event = WL.GameOrderEvent.Create(order.PlayerID, "A Landmine exploded in " .. game.Map.Territories[order.To].Name .. " killing " .. n .. " armies. ", {}, {exploded});
             event.JumpToActionSpotOpt = WL.RectangleVM.Create(game.Map.Territories[order.To].MiddlePointX, game.Map.Territories[order.To].MiddlePointY, game.Map.Territories[order.To].MiddlePointX, game.Map.Territories[order.To].MiddlePointY);
-            addNewOrder(event); 
             LP[order.To] = nil
+            addNewOrder(event); 
         end
     end
+    publicGameData.LandminesPlaced = LP
+    Mod.PublicGameData = publicGameData
 end
 
 function startsWith(s, sub)

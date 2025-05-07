@@ -29,8 +29,10 @@ function Client_PresentConfigureUI(rootParent)
     if maxUnits == nil then maxUnits = 3; end							-- maximum number of landmines that a player can position
 	local turnNeutral = Mod.Settings.TurnNeutral;
 	if turnNeutral == nil then turnNeutral = true; end
-    --local cooldown = Mod.Settings.Cooldown;
-    --if cooldown == nil then cooldown = false; end       				-- if true then there is a cooldown between each time a player positions a landmine
+    local cooldownTime = Mod.Settings.Cooldown;
+    if cooldownTime == nil then cooldownTime = 0; end       				-- if true then there is a cooldown between each time a player positions a landmine
+	local turnsNeutral = Mod.Settings.TurnsNeutral;
+    if turnsNeutral == nil then turnsNeutral = true; end       				-- if true then there is a cooldown between each time a player positions a landmine
 
 
 
@@ -138,14 +140,20 @@ function Client_PresentConfigureUI(rootParent)
 		
 		CreateEmpty(root).SetPreferredHeight(5);
 	end
-	--[[
+	
 	function cooldown()
-		CreateLabel(root).SetText("Is there a cooldown between each time a player positions a landmine?").SetColor(textcolor);
-		CreateCheckBox(root).SetValue(cooldown)
+		CreateLabel(root).SetText("The cooldown between each time a player positions a landmine (set 0 if there should be no cooldown)").SetColor(textcolor);
+		cooldownInput = CreateNumberInputField(root).SetSliderMaxValue(8).SetSliderMinValue(0).SetValue(cooldownTime);
 
 		CreateEmpty(root).SetPreferredHeight(5);
 	end
-	]]--
+
+	function turningNeutral()
+		CreateLabel(root).SetText("If the landmine kills all the armies, does the territory turn neutral?").SetColor(textcolor);
+		turnsNeutralInput = CreateCheckBox(root).SetText("").SetIsChecked(turnsNeutral)
+
+		CreateEmpty(root).SetPreferredHeight(5);
+	end
 
 
 
