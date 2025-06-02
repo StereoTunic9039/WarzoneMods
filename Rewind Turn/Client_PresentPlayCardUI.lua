@@ -4,5 +4,8 @@ require('Utilities')
 function Client_PresentPlayCardUI(game, cardInstance, playCard, closeCardsDialog)
     Game = game;
 
-    playCard("Detonate a smoke bomb on nowhere" , "SmokeBomb", WL.TurnPhase.Deploys)
+    local pl = Game.Us.ID
+    local player = Game.Game.Players[pl]
+    local name = player.DisplayName(nil, true)
+    playCard(name .. "played a rewind card." , "RewindCard", WL.TurnPhase.CardsWearOff)
 end
