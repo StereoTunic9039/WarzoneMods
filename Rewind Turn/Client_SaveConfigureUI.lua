@@ -38,4 +38,6 @@ function Client_SaveConfigureUI(alert)
 		Mod.Settings.RewindTurn.StartPieces = 100
 	end
 
+	local cardID = addCard("Rewind Turn Card", "you know", "RewindTurnCard.png", Mod.Settings.NumPieces, Mod.Settings.MinPieces, Mod.Settings.StartPieces, Mod.Settings.CardWeight);
+
 end  				-- Sets straight every unwanted input and such 
