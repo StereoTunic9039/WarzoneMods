@@ -41,7 +41,7 @@ function Client_PresentConfigureUI(rootParent)
 
 	cwCont = CreateHorizontalLayoutGroup(mainCont)															   
 	cwLabel = CreateLabel(cwCont).SetText("Card weight (how common the card is): ")				  				-- Label
-	cwSlider = CreateNumberInputField(cwCont).SetSliderMinValue(0).SetSliderMaxValue(2).SetValue(cardWeight) 
+	cwSlider = CreateNumberInputField(cwCont).SetWholeNumbers(false).SetSliderMinValue(0).SetSliderMaxValue(2).SetValue(cardWeight) 
 
 	mpCont = CreateHorizontalLayoutGroup(mainCont)															   
 	mpLabel = CreateLabel(mpCont).SetText("Minimum pieces awarded per turn: ")				  				-- Label
