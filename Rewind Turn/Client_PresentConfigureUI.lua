@@ -3,6 +3,11 @@ require("UI")
 
 function Client_PresentConfigureUI(rootParent)
 
+	if (not WL.IsVersionOrHigher("5.33")) then
+		UI.Alert("You must update your app to the latest version to use the Smoke Bomb Card mod");
+		return;
+	end
+
 	Init(rootParent)
     vert = GetRoot();
 
