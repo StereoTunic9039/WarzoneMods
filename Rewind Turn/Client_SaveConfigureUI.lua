@@ -1,6 +1,6 @@
 require("Client_PresentConfigureUI")
 
-function Client_SaveConfigureUI(alert)
+function Client_SaveConfigureUI(alert, addCard)
 
 	Mod.Settings.RewindTurn.NumPieces  = npSlider.GetValue()
 	if (Mod.Settings.RewindTurn.NumPieces < 1) then
