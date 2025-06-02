@@ -19,7 +19,7 @@ function Client_PresentConfigureUI(rootParent)
 		numPieces = 12
 	end
 	if cardWeight == nil then
-		cardWeight = 1
+		cardWeight = 1.0
 	end
 	if minPieces == nil then
 		minPieces = 1
