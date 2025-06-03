@@ -14,7 +14,7 @@ function Server_AdvanceTurn_Order(game, order, result, skipThisOrder, addNewOrde
 			allIDs = {}
 
 			GS = game.ServerGame.LatestTurnStanding
-			tblprint(GameStanding)
+			tblprint("GameStanding")
 
 
 
