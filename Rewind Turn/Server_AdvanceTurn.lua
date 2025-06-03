@@ -1,6 +1,8 @@
 require("Utilities");
 require("consolelog")
 
+local GS = {}
+
 function Server_AdvanceTurn_Order(game, order, result, skipThisOrder, addNewOrder)   -- when the order of the played card is called idk im too tired to properly comment goodday
     if (order.proxyType == 'GameOrderPlayCardCustom' and startsWith(order.ModData, "RewindCard")) then
         local playerID = tonumber(string.sub(order.ModData, 11));
@@ -11,7 +13,7 @@ function Server_AdvanceTurn_Order(game, order, result, skipThisOrder, addNewOrde
 		if allIDs == nil then
 			allIDs = {}
 
-			local GameStanding = game.ServerGame.LatestTurnStanding
+			GS = game.ServerGame.LatestTurnStanding
 			tblprint(GameStanding)
 
 
@@ -47,6 +49,8 @@ function Server_AdvanceTurn_End(game, addNewOrder)
 	if (pub.RwcIDs == nil) then
 		return; 
 	end
+
+	game.ServerGame.LatestTurnStanding = GS
 
 	--local event = WL.GameOrderEvent.Create(WL.PlayerID.Neutral, 'Smoke bombs dissipate', {});
 	--event.RemoveFogModsOpt = priv.FogModIDs;
