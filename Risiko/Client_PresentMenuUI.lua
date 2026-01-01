@@ -26,6 +26,8 @@ function Client_PresentMenuUI(rootParent, setMaxSize, setScrollable, game, close
 
 
     local turnOrder = Mod.PublicGameData.PlayerOrder;
+    local head = table.remove(turnOrder, 1)
+    turnOrder[#turnOrder +1] = head
     if turnOrder == nil then
         UI.CreateLabel(vert).SetText("Turn order not yet determined.");
     else

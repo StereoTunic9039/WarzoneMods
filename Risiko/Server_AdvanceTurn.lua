@@ -56,5 +56,9 @@ function Server_AdvanceTurn_End(game, addNewOrder)
 			addNewOrder(WL.GameOrderReceiveCard.Create(currTurn, {inst}));
 			addNewOrder(WL.GameOrderPlayCardSanctions.Create(inst.ID, currTurn, sanction));
 		end
+		local reduction;				-- No one can keep gold between turns in Risiko
+		reduction = WL.GameOrderEvent.Create(WL.PlayerID.Neutral, "ah ah suck it", {}, {}, {});
+		reduction.SetResourceOpt = {[sanction] = {[WL.ResourceType.Gold]=0}};
+		addNewOrder(reduction)
 	end
 end

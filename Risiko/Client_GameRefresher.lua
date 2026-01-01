@@ -2,9 +2,11 @@ require('Utilities');
 
 --Remember if we've alerted the instructions so we don't do it twice
 ShownInstructions = false;
+ShownTurn = 0;
 
 function Client_GameRefresh(game)
     CheckShowInstructions(game);
+    CheckYourTurn(game);
 end
 
 function CheckShowInstructions(game)
@@ -32,4 +34,22 @@ function OurIndex(us)
         ret = ret + 1;
     end
     error("Not in game");
+end
+
+function CheckYourTurn(game)
+    if (game.Us == nil) then return; end --Skip if we're not in the game.
+
+    if (game.Game.NumberOfTurns == 0) then return; end --Skip if it is the first turn
+
+    if (ShownTurn < game.Game.NumberOfTurns) then return; end --Skip if we've already shown it
+
+    local order = Mod.PublicGameData.PlayerOrder;
+    local ourIndex = OurIndex(game.Us.ID);
+    local currTurn = order[game.Game.NumberOfTurns % #order + 1];
+
+    ShownTurn = game.Game.NumberOfTurns;
+
+    if (currTurn == game.Us.ID) then
+        UI.Alert("It's your turn! \nMake it count!");
+    end
 end
