@@ -5,4 +5,12 @@ function Server_Created(game, settings)
 	local cards = BuildMetatable(settings.Cards);
 	cards[WL.CardID.Sanctions] = WL.CardGameSanctions.Create(2, 0, 0, 1, 1, 1);
 	settings.Cards = cards;
+
+    --local strRef = "Play this card to gain an extra " .. X .. " armies\nPlay reinforcement cards before you start deploying";
+    --Mod.Settings.ResurrectionCardID = addCard ("Reinforcement card", strRef, "resurrection_130x180.png", 3, 1, 0, 1);
+
+
+    local publicGameData = Mod.PublicGameData;
+    publicGameData.ArmyCard = {};
+    Mod.PublicGameData = publicGameData;
 end

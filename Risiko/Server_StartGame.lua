@@ -24,7 +24,8 @@ function Server_StartGame(game, standing)
         for i, v in pairs(res[player.ID]) do                    --Copying as just anticipated   
             t[i] = v;
         end
-        t[WL.ResourceType.Gold] = 13;                           --Give each player 13 gold to start with
+        local np = #game.Game.PlayingPlayers;                   --Number of players
+        t[WL.ResourceType.Gold] = (50-(5*np)) - math.floor(42/np);        --Give each player 13 gold to start with
         res[player.ID] = t;                                     --Store t back into the resources table
     end
 
