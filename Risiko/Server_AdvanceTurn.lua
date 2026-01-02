@@ -1,3 +1,4 @@
+require("Annotations");
 require('Utilities');
 require('consolelog');
 numTransfersTable = {};

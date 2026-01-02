@@ -1,4 +1,6 @@
+require("Annotations");
 require('Utilities');
+require('consolelog');
 
 --Remember if we've alerted the instructions so we don't do it twice
 ShownInstructions = false;

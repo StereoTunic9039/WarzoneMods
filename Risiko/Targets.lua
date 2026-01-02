@@ -1,3 +1,8 @@
+require("Annotations");
+require('Utilities');
+require('consolelog');
+
+
 24T = {
     Message = "You need to conquer 24 territories to win the game.",
     CheckVictory = CheckVictory_Risk24T
@@ -10,7 +15,7 @@ function CheckVictory_Risk24T()
     local pid = game.Us.ID;
 
     local territoryCount = 0;
-    local Territories = game.Map.Territories;
+    
     for _, territory in pairs(Territories) do
         if territory.OwnerPlayerID == pid then
             territoryCount = territoryCount + 1;
