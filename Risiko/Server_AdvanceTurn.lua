@@ -10,7 +10,6 @@ function Server_AdvanceTurn_Order(game, order, result, skipThisOrder, addNewOrde
 	end
 	
 	if (game.Game.NumberOfTurns == 0) then
-		tblprint(order.proxyType);
 		if (order.proxyType == 'GameOrderDeploy') then return; else skipThisOrder(WL.ModOrderControl.Skip); end
 	end			--Allow all deploy orders on the first turn, skip everything else
 		
@@ -56,9 +55,5 @@ function Server_AdvanceTurn_End(game, addNewOrder)
 			addNewOrder(WL.GameOrderReceiveCard.Create(currTurn, {inst}));
 			addNewOrder(WL.GameOrderPlayCardSanctions.Create(inst.ID, currTurn, sanction));
 		end
-		local reduction;				-- No one can keep gold between turns in Risiko
-		reduction = WL.GameOrderEvent.Create(WL.PlayerID.Neutral, "ah ah suck it", {}, {}, {});
-		reduction.SetResourceOpt = {[sanction] = {[WL.ResourceType.Gold]=0}};
-		addNewOrder(reduction)
 	end
 end

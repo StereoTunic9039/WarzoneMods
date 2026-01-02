@@ -1,4 +1,6 @@
 require("Annotations");
+require('Utilities');
+require('consolelog');
 
 ---Server_StartGame
 ---@param game GameServerHook
@@ -12,21 +14,29 @@ function Server_StartGame(game, standing)
     end
 
     local pids = {};                    --Store all player IDs in a list
-    local res = standing.Resources;     --Copy existing resources (gold) so we don't wipe them out
+    local res = standing.IncomeMods;    --Copy existing income modification so not to wipe them out
 
     if res == nil then res = {}; end
     for pid, player in pairs(game.Game.PlayingPlayers) do
 
         pids[#pids+1] = pid;            --Add this player to the list of player IDs
 
-        if res[player.ID] == nil then res[player.ID] = {}; end  --Ensure this player has a resources table
-        local t = {};                                           --To modify that table we copy it here and change this one
-        for i, v in pairs(res[player.ID]) do                    --Copying as just anticipated   
-            t[i] = v;
+        local np = #game.Game.PlayingPlayers;                               --Number of players 
+        if np < 2 or np > 8 then
+            error("Risiko mod only supports 2 to 6 players.");
         end
-        local np = #game.Game.PlayingPlayers;                   --Number of players
-        t[WL.ResourceType.Gold] = (50-(5*np)) - math.floor(42/np);        --Give each player 13 gold to start with
-        res[player.ID] = t;                                     --Store t back into the resources table
+        local armies = {
+            [2] = 12,
+            [3] = 17,
+            [4] = 17,
+            [5] = 15,
+            [6] = 11,
+            [7] = 7,
+            [8] = 4
+        }
+        local mod = armies[np];      --Give each player their armies
+
+        res[#res+1] = WL.IncomeMod.Create(player.ID, mod, "how are you reading this?")
     end
 
     --to randomly sort fairly, generate a random number for each player and then sort by that.
@@ -40,5 +50,5 @@ function Server_StartGame(game, standing)
     local gameData = Mod.PublicGameData;
 	gameData.PlayerOrder = pids;
 	Mod.PublicGameData = gameData;
-    standing.Resources = res;
+    standing.IncomeMods = res;
 end
