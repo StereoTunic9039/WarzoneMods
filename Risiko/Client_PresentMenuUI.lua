@@ -6,7 +6,7 @@ function Client_PresentMenuUI(rootParent, setMaxSize, setScrollable, game, close
 	Game = game;
 	Close = close;
 
-	setMaxSize(350, 330);
+	setMaxSize(350, 350);
 
 	local vert = UI.CreateVerticalLayoutGroup(rootParent);
 
@@ -24,8 +24,8 @@ function Client_PresentMenuUI(rootParent, setMaxSize, setScrollable, game, close
         end
     ]]--
 
-
-    local turnOrder = Mod.PublicGameData.PlayerOrder;
+    local gameData = Mod.PublicGameData;
+    local turnOrder = gameData.PlayerOrder;
     local head = table.remove(turnOrder, 1)
     turnOrder[#turnOrder +1] = head
     if turnOrder == nil then
@@ -57,11 +57,17 @@ function Client_PresentMenuUI(rootParent, setMaxSize, setScrollable, game, close
 		UI.CreateLabel(vert).SetText("You do not have any objective as you're not in the game currently.");
     else
         local row2 = UI.CreateHorizontalLayoutGroup(vert);
-        UI.CreateLabel(row2).SetText("Your objective is: ")
-        local id = game.Us.ID
-        local playerObj = Mod.PublicGameData.PlayerObjectives
-        if playerObj ~= nil and playerObj[id] ~= nil then
-            UI.CreateLabel(vert).SetText(playerObj[id]);
+        UI.CreateLabel(row2).SetText("Your objective: ")
+        local playerObj = Mod.PlayerGameData.Target
+        local theTargets = gameData.theTargets;
+        if playerObj ~= nil and theTargets ~= nil then
+            if theTargets[playerObj] == nil then
+                UI.CreateLabel(vert).SetText("Objective data not found.");
+                return;
+            end
+            local text = theTargets[playerObj].Message or "Objective not found.";
+            UI.CreateLabel(vert).SetText(text);
+            
             return;
         else
             UI.CreateLabel(vert).SetText("yet to be built")
